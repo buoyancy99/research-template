@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 from typing import Optional
 
-import pytorch_lightning as pl
+import lightning.pytorch as pl
 from .exp_base import BaseLightningExperiment
 
 from omegaconf import DictConfig

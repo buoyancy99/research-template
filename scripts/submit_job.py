@@ -145,7 +145,7 @@ def start_slurm_job(
         "SuperCloud": "volta:",
     }[detect_cluster()]
 
-    script = f'python3 -m main wandb.mode={wandb_mode} "+wandb.name={name}" {additions}'
+    script = f'python3 -m main +name={name} wandb.mode={wandb_mode} {additions}'
 
     environment_setup = {
         # Satori environment setup:

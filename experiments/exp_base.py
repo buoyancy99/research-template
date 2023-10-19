@@ -6,16 +6,15 @@ import os
 import wandb
 import hydra
 import torch
-from pytorch_lightning.strategies.ddp import DDPStrategy
+from lightning.pytorch.strategies.ddp import DDPStrategy
 import numpy as np
 import torch.nn as nn
 from tqdm import tqdm
 
-import pytorch_lightning as pl
-from pytorch_lightning.loggers.wandb import WandbLogger
-from pytorch_lightning.utilities.types import TRAIN_DATALOADERS
-from pytorch_lightning.core.datamodule import LightningDataModule
-from pytorch_lightning.callbacks import LearningRateMonitor, ModelCheckpoint
+import lightning.pytorch as pl
+from lightning.pytorch.loggers.wandb import WandbLogger
+from lightning.pytorch.utilities.types import TRAIN_DATALOADERS
+from lightning.pytorch.callbacks import LearningRateMonitor, ModelCheckpoint
 
 from omegaconf import DictConfig
 
@@ -135,7 +134,7 @@ class BaseLightningExperiment(BaseExperiment):
         """
         return self.compatible_algorithms[self.cfg.algorithm.name](self.cfg.algorithm)
 
-    def _build_training_loader(self) -> Optional[Union[TRAIN_DATALOADERS, LightningDataModule]]:
+    def _build_training_loader(self) -> Optional[Union[TRAIN_DATALOADERS, pl.LightningDataModule]]:
         train_dataset = self._build_dataset("training")
         if train_dataset:
             return torch.utils.data.DataLoader(
@@ -148,7 +147,7 @@ class BaseLightningExperiment(BaseExperiment):
         else:
             return None
 
-    def _build_validation_loader(self) -> Optional[Union[TRAIN_DATALOADERS, LightningDataModule]]:
+    def _build_validation_loader(self) -> Optional[Union[TRAIN_DATALOADERS, pl.LightningDataModule]]:
         validation_dataset = self._build_dataset("validation")
         if validation_dataset:
             return torch.utils.data.DataLoader(
@@ -161,7 +160,7 @@ class BaseLightningExperiment(BaseExperiment):
         else:
             return None
 
-    def _build_test_loader(self) -> Optional[Union[TRAIN_DATALOADERS, LightningDataModule]]:
+    def _build_test_loader(self) -> Optional[Union[TRAIN_DATALOADERS, pl.LightningDataModule]]:
         test_dataset = self._build_dataset("test")
         if test_dataset:
             return torch.utils.data.DataLoader(

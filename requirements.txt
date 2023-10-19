@@ -8,7 +8,7 @@ colorama
 tqdm
 opencv-python
 matplotlib
-pytorch_lightning
+lightning
 click
 moviepy
 imageio

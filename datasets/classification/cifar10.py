@@ -22,7 +22,6 @@ classes = ('plane', 'car', 'bird', 'cat', 'deer',
 class CIFAR10Dataset(torchvision.datasets.CIFAR10):
     def __init__(self, cfg: DictConfig, split='training'):
         self.cfg = cfg
-        print(cfg, cfg.keys())
         self.debug = cfg.debug
         if split == 'training':
             transform = transform_train

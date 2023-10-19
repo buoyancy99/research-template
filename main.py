@@ -8,7 +8,7 @@ import hydra
 import torch
 import wandb
 from omegaconf import DictConfig, OmegaConf
-from pytorch_lightning.loggers.wandb import WandbLogger
+from lightning.pytorch.loggers.wandb import WandbLogger
 
 from utils.wandb_utils import download_latest_checkpoint, rewrite_checkpoint_for_compatibility
 from experiments import build_experiment
@@ -17,7 +17,8 @@ from experiments import build_experiment
 def process_checkpointing_cfg(cfg: DictConfig) -> Dict[str, Any]:
     params = {**cfg}
     if "train_time_interval" in params:
-        params["train_time_interval"] = timedelta(**params["train_time_interval"])
+        params["train_time_interval"] = timedelta(
+            **params["train_time_interval"])
     return params  # type: ignore
 
 
@@ -44,7 +45,17 @@ def run(cfg: DictConfig):
     # Set up logging with wandb.
     if cfg.wandb.mode != "disabled":
         if "name" not in cfg:
-            raise ValueError("must specify a name for the run with command line argument '+name=[name]'")
+            raise ValueError(
+                "must specify a name for the run with command line argument '+name=[name]'")
+
+        if "entity" not in cfg.wandb:
+            raise ValueError(
+                "must specify wandb entity in 'configurations/config.yaml' or with command line"
+                " argument '+wandb.entity=[entity]' \n An entity is your wandb user name or group name.")
+
+        if cfg.wandb.project is None:
+            cfg.wandb.project = str(Path(__file__).parent.name)
+
         # If resuming, merge into the existing run on wandb.
         resume_id = cfg.wandb.get("resume", None)
         name = (
