@@ -181,7 +181,7 @@ class BaseLightningExperiment(BaseExperiment):
 
     def train(self) -> None:
         """
-        All train happens here
+        All training happens here
         """
         callbacks = []
         if self.logger:
@@ -196,7 +196,9 @@ class BaseLightningExperiment(BaseExperiment):
             )
 
         trainer = pl.Trainer(
-            max_epochs=-1,
+            max_epochs=self.cfg.experiment.training.max_epochs,
+            max_steps=self.cfg.experiment.training.max_steps,
+            max_time=self.cfg.experiment.training.max_time,
             accelerator='auto',
             logger=self.logger,
             devices="auto",
