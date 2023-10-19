@@ -1,0 +1,3 @@
+name: base_algorithm
+debug: ${debug}
+lr: 1e-3

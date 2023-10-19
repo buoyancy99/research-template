@@ -1,0 +1,24 @@
+program: main.py
+method: grid  # hp search method
+
+metric:
+  goal: maximize
+  name: validation/accuracy
+
+parameters:
+  # Sweep params
+  algorithm.lr:
+    values: [1e-3, 1e-4]
+  experiment.training.batch_size:
+    values: [32, 64]
+
+  # Default params
+  wandb.mode:
+    value: online
+
+command:
+  - ${env}
+  - python
+  - ${program}
+  - ${args_no_hyphens}
+  - +name=example_lr${algorithm.lr}_batch${experiment.training.batch_size}

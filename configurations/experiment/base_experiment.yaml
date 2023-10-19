@@ -1,0 +1,22 @@
+debug: ${debug}
+tasks: [train]
+
+training:
+  precision: 16-mixed
+  batch_size: 16
+  data:
+    num_workers: 16
+    shuffle: True
+  optim:
+    accumulate_grad_batches: 1
+  checkpointing:
+    every_n_train_steps: 5000
+
+validation:
+  batch_size: 16
+  check_interval: 2000 # if you want to do validation more than 1 time per training epoch, can be float (fraction of epoches) or int (steps)
+  check_epoch: 1 # if you want to do validation more than 1 time per training epoch, requires val_check_interval to be int
+  limit_batch: null # if not null, limit the number of batches to use for validation
+  data:
+    num_workers: 16
+    shuffle: False

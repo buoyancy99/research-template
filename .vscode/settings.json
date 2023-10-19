@@ -1,0 +1,6 @@
+{
+    "[python]": {
+        "editor.defaultFormatter": "ms-python.autopep8"
+    },
+    "python.defaultInterpreterPath": "/home/boyuan/anaconda3/envs/template/bin/python",
+}

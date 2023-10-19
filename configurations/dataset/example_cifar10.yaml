@@ -1,0 +1,5 @@
+defaults:
+  - base_dataset
+
+name: example_cifar10
+data_dir: "data/cifar10"
