@@ -23,10 +23,3 @@ class ClassificationExperiment(BaseLightningExperiment):
     compatible_datasets = dict(
         example_cifar10=CIFAR10Dataset
     )
-
-    def _build_model(self) -> pl.LightningModule:
-        """
-        Build the lightning module
-        :return:  a pytorch-lightning module to be launched
-        """
-        return self.compatible_algorithms[self.cfg.algorithm._name](self.cfg.algorithm)
