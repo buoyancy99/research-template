@@ -1,11 +1,11 @@
-debug: ${debug}
+debug: ${debug} # inherited from configurations/config.yaml
 tasks: [train]
 
 training:
-  precision: 16-mixed
+  precision: 16-mixed # set float precision, 16-mixed is faster while 32 is more stable
   batch_size: 16
-  max_epochs: -1 # set to -1 to train forever
-  max_steps: null # set to -1 to train forever, will override max_epochs
+  max_epochs: 1000 # set to -1 to train forever
+  max_steps: -1 # set to -1 to train forever, will override max_epochs
   max_time: null # set to something like "00:12:00:00" to enable
   data:
     num_workers: 16

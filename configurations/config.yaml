@@ -4,7 +4,7 @@ defaults:
   - dataset: example_cifar10 # dataset yaml file name in configurations/dataset folder [fixme]
   - algorithm: example_classifier # algorithm yaml file name in configurations/algorithm folder [fixme]
 
-debug: false
+debug: false # global debug flag will be passed into configuration of experiment, dataset and algorithm
 
 wandb:
   entity: null # wandb account name / organization name [fixme]

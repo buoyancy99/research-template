@@ -3,25 +3,23 @@ import numpy as np
 import torch
 import torch.nn as nn
 
-
+from algorithms.common.base_pytorch_algo import BasePytorchAlgo
 from .models import arch_registry
 
 
-class Classifier(pl.LightningModule):
+class Classifier(BasePytorchAlgo):
     """
     A sample algorithm doing classification for CIFAR-10
     Adopted from https://github.com/kuangliu/pytorch-cifar
     """
 
     def __init__(self, cfg):
-        super().__init__()
-        self.cfg = cfg
-        self.debug = self.cfg.debug
-        self._build_model()
+        self.num_class = cfg.num_class
+        super().__init__(cfg)  # superclass saves cfg as self.cfg and calls _build_model
 
     def _build_model(self):
         self.model = arch_registry[self.cfg.arch](
-            self.cfg.num_class, self.cfg.in_channels)
+            self.num_class, self.cfg.in_channels)
         self.criterion = nn.CrossEntropyLoss()
 
     def configure_optimizers(self):

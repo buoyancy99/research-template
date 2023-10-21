@@ -1,5 +1,8 @@
+# wandb sweep configuration
+# this is independent of all other configurations under configurations/ folder as this is not used by the code
+
 program: main.py
-method: grid  # hp search method
+method: grid # hp search method
 
 metric:
   goal: maximize

@@ -8,6 +8,7 @@ import hydra
 import torch
 import wandb
 from omegaconf import DictConfig, OmegaConf
+from omegaconf.omegaconf import open_dict
 from lightning.pytorch.loggers.wandb import WandbLogger
 
 from utils.wandb_utils import download_latest_checkpoint, rewrite_checkpoint_for_compatibility
@@ -35,10 +36,17 @@ def run(cfg: DictConfig):
             "install Anaconda3-2022.10-Linux-ppc64le.sh"
         )
 
+    # Get yaml names
+    hydra_cfg = hydra.core.hydra_config.HydraConfig.get()
+    cfg_choice = OmegaConf.to_container(hydra_cfg.runtime.choices)
+
+    with open_dict(cfg):
+        cfg.experiment._name = cfg_choice["experiment"]
+        cfg.dataset._name = cfg_choice["dataset"]
+        cfg.algorithm._name = cfg_choice["algorithm"]
+
     # Set up the output directory.
-    output_dir = Path(
-        hydra.core.hydra_config.HydraConfig.get()["runtime"]["output_dir"]
-    )
+    output_dir = Path(hydra_cfg.runtime.output_dir)
     print(f"Saving outputs to {output_dir}")
     os.system(f"ln -sfn {output_dir} {output_dir.parents[1]}/latest-run")
 

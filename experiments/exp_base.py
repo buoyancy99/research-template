@@ -110,7 +110,11 @@ class BaseLightningExperiment(BaseExperiment):
     Abstract class for pytorch lightning experiments. Useful for computer vision & nlp where main components are
     simply models, datasets and train loop.
     """
+
+    # each key has to be a yaml file under '[project_root]/configurations/algorithm' without .yaml suffix
     compatible_algorithms: Dict = NotImplementedError
+
+    # each key has to be a yaml file under '[project_root]/configurations/dataset' without .yaml suffix
     compatible_datasets: Dict = NotImplementedError
 
     def __init__(
@@ -132,7 +136,7 @@ class BaseLightningExperiment(BaseExperiment):
         Build the lightning module
         :return:  a pytorch-lightning module to be launched
         """
-        return self.compatible_algorithms[self.cfg.algorithm.name](self.cfg.algorithm)
+        return self.compatible_algorithms[self.cfg.algorithm._name](self.cfg.algorithm)
 
     def _build_training_loader(self) -> Optional[Union[TRAIN_DATALOADERS, pl.LightningDataModule]]:
         train_dataset = self._build_dataset("training")
@@ -245,7 +249,7 @@ class BaseLightningExperiment(BaseExperiment):
 
     def _build_dataset(self, split: str) -> Optional[torch.utils.data.Dataset]:
         if split in ['training', 'test', 'validation']:
-            return self.compatible_datasets[self.cfg.dataset.name](self.cfg.dataset, split=split)
+            return self.compatible_datasets[self.cfg.dataset._name](self.cfg.dataset, split=split)
         else:
             raise NotImplementedError(f"split '{split}' is not implemented")
 

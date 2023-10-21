@@ -1,7 +1,6 @@
 defaults:
   - base_experiment
 
-name: example_classification
 training:
   batch_size: 32
   max_epochs: 10

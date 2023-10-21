@@ -39,13 +39,15 @@ Add your experiment in `experiments` following the `experiments/README.md` as we
 Finally, add a yaml config file to `configurations/experiment` imitating that of
 `configurations/experiment/example_classification.yaml`, for each experiment you added.
 
+Modify `configurations/config.yaml` to set `algorithm` to the yaml file you want to use in `configurations/algorithm`;
+set `experiment` to the yaml file you want to use in `configurations/experiment`; set `dataset` to the yaml file you
+want to use in `configurations/dataset`, or to `null` if no dataset is needed; Notice the fields should not contain the
+`.yaml` suffix.
+
 You are all set!
 
-`cd` into your project root. Now you can launch your new experiment with
-
-`python main.py +name=example_name wandb.mode=online algorithm=[yaml_name_of_your_algorithm] experiment=[yaml_name_of your_experiment] dataset=[yaml_name_of_your_dataset]`
-
-Notice the contents of [] shouldn't contain the `.yaml` suffix.
+`cd` into your project root. Now you can launch your new experiment with `python main.py +name=example_name wandb.mode=online`. For a debug run, simply remove `wandb.mode=online` to diable cloud logging. You can run baselines or
+different datasets by add arguments like `algorithm=[xxx]` or `dataset=[xxx]`.
 
 ## Hyperparameter Sweep
 

@@ -1,8 +1,7 @@
 defaults:
   - base_algorithm
 
-name: example_classifier
 arch: resnet18
 num_class: 10
 in_channels: 3
-lr: 1e-3  # overrides that in base_algorithm
+lr: 1e-3 # overrides that in base_algorithm

@@ -1,3 +1,4 @@
-name: base_algorithm
-debug: ${debug}
+# This will be passed as the cfg to Algo.__init__(cfg) of your algorithm class
+
+debug: ${debug} # inherited from configurations/config.yaml
 lr: 1e-3
