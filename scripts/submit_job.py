@@ -1,3 +1,9 @@
+"""
+This script is written for MIT's Supercloud & Satori. Adding your own cluster is easy, just search for Satori in this 
+file and modify accordingly.
+"""
+
+
 import getpass
 import os
 from datetime import datetime
@@ -11,6 +17,7 @@ from colorama import Fore
 # This is set below.
 REPO_DIR = None
 
+# mit has two clusters, Satori and SuperCloud
 Cluster = Literal["Satori", "SuperCloud"]
 
 
@@ -47,9 +54,9 @@ def only_on(option, *clusters: List[Cluster]):
     prompt=cyan("Run name"),
 )
 @click.option(
-    "--additions",
+    "--arguments",
     type=str,
-    prompt=cyan("Additions, appended to script"),
+    prompt=cyan("Arguments, appended to script"),
     default="",
 )
 @click.option(
