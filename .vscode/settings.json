@@ -1,6 +1,6 @@
 {
     "[python]": {
-        "editor.defaultFormatter": "ms-python.autopep8"
+        "editor.defaultFormatter": "ms-python.black-formatter"
     },
     "python.defaultInterpreterPath": "/Users/boyuan/miniconda3/envs/template/bin/python",
     "editor.rulers": [
