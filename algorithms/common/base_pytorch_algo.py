@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Any, Union, Sequence
+from typing import Any, Union, Sequence, Optional
 from lightning.pytorch.utilities.types import STEP_OUTPUT
 
 from omegaconf import DictConfig
@@ -61,7 +61,7 @@ class BasePytorchAlgo(pl.LightningModule, ABC):
         )
 
     def log_image(
-        self, key: str, image: Union[np.ndarray, torch.Tensor, Sequence], caption: Union[str, Sequence] = None
+        self, key: str, image: Union[np.ndarray, torch.Tensor, Sequence], caption: Optional[Union[str, Sequence]] = None
     ):
         """
         Log image(s) using WandbLogger.
