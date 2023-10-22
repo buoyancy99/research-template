@@ -2,7 +2,7 @@
     "[python]": {
         "editor.defaultFormatter": "ms-python.autopep8"
     },
-    "python.defaultInterpreterPath": "/home/boyuan/anaconda3/envs/template/bin/python",
+    "python.defaultInterpreterPath": "/Users/boyuan/miniconda3/envs/template/bin/python",
     "editor.rulers": [
         120
     ]
