@@ -2,3 +2,18 @@ defaults:
   - base_dataset
 
 data_dir: "data/cifar10"
+mean: [0.4914, 0.4822, 0.4465]
+std: [0.2023, 0.1994, 0.2010]
+classes:
+  [
+    "plane",
+    "car",
+    "bird",
+    "cat",
+    "deer",
+    "dog",
+    "frog",
+    "horse",
+    "ship",
+    "truck",
+  ]

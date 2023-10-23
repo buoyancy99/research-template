@@ -29,7 +29,7 @@ class BaseExperiment(ABC):
         self,
         cfg: DictConfig,
         logger: Optional[WandbLogger] = None,
-        ckpt_path: Optional[Union[str, pathlib.Path]] = None
+        ckpt_path: Optional[Union[str, pathlib.Path]] = None,
     ) -> None:
         """
         Constructor
@@ -54,11 +54,10 @@ class BaseExperiment(ABC):
         Args:
             task: a string specifying a task implemented for this experiment
         """
-        if task == 'train':
+        if task == "train":
             self.train()
         else:
-            raise ValueError(
-                f"Specified task '{task}' not implemented for class {self.__class__.__name__}.")
+            raise ValueError(f"Specified task '{task}' not implemented for class {self.__class__.__name__}.")
 
     @abstractmethod
     def train(self) -> None:
@@ -79,10 +78,10 @@ class BasePytorchExperiment(BaseExperiment, ABC):
         self,
         cfg: DictConfig,
         logger: Optional[WandbLogger] = None,
-        ckpt_path: Optional[Union[str, pathlib.Path]] = None
+        ckpt_path: Optional[Union[str, pathlib.Path]] = None,
     ) -> None:
         super().__init__(cfg, logger, ckpt_path)
-        self.device = self._get_device('auto')
+        self.device = self._get_device("auto")
 
     @staticmethod
     def _get_device(device) -> torch.device:
@@ -91,16 +90,16 @@ class BasePytorchExperiment(BaseExperiment, ABC):
         :param device:
         :return:
         """
-        if device == 'auto':
+        if device == "auto":
             if torch.backends.mps.is_available() and torch.backends.mps.is_built():
                 # mac
-                device = 'mps'
+                device = "mps"
             elif torch.cuda.is_available() and torch.backends.cuda.is_built():
                 # cuda
-                device = 'cuda'
+                device = "cuda"
             else:
-                device = 'cpu'
-        print(f'Using device {device}.')
+                device = "cpu"
+        print(f"Using device {device}.")
 
         return torch.device(device)
 
@@ -121,7 +120,7 @@ class BaseLightningExperiment(BaseExperiment):
         self,
         cfg: DictConfig,
         logger: Optional[WandbLogger] = None,
-        ckpt_path: Optional[Union[str, pathlib.Path]] = None
+        ckpt_path: Optional[Union[str, pathlib.Path]] = None,
     ) -> None:
         super().__init__(cfg, logger, ckpt_path)
         self.model = self._build_model()
@@ -144,8 +143,7 @@ class BaseLightningExperiment(BaseExperiment):
             return torch.utils.data.DataLoader(
                 train_dataset,
                 batch_size=self.cfg.experiment.training.batch_size,
-                num_workers=min(
-                    os.cpu_count(), self.cfg.experiment.training.data.num_workers),
+                num_workers=min(os.cpu_count(), self.cfg.experiment.training.data.num_workers),
                 shuffle=self.cfg.experiment.training.data.shuffle,
             )
         else:
@@ -157,8 +155,7 @@ class BaseLightningExperiment(BaseExperiment):
             return torch.utils.data.DataLoader(
                 validation_dataset,
                 batch_size=self.cfg.experiment.validation.batch_size,
-                num_workers=min(
-                    os.cpu_count(), self.cfg.experiment.validation.data.num_workers),
+                num_workers=min(os.cpu_count(), self.cfg.experiment.validation.data.num_workers),
                 shuffle=self.cfg.experiment.validation.data.shuffle,
             )
         else:
@@ -170,15 +167,14 @@ class BaseLightningExperiment(BaseExperiment):
             return torch.utils.data.DataLoader(
                 test_dataset,
                 batch_size=self.cfg.experiment.test.batch_size,
-                num_workers=min(
-                    os.cpu_count(), self.cfg.experiment.test.data.num_workers),
+                num_workers=min(os.cpu_count(), self.cfg.experiment.test.data.num_workers),
                 shuffle=self.cfg.experiment.test.data.shuffle,
             )
         else:
             return None
 
     def exec_task(self, task: str) -> None:
-        if task == 'test':
+        if task == "test":
             self.test()
         else:
             super().exec_task(task)
@@ -193,8 +189,7 @@ class BaseLightningExperiment(BaseExperiment):
         if "checkpointing" in self.cfg.experiment.training:
             callbacks.append(
                 ModelCheckpoint(
-                    pathlib.Path(hydra.core.hydra_config.HydraConfig.get()[
-                                 "runtime"]["output_dir"]) / "checkpoints",
+                    pathlib.Path(hydra.core.hydra_config.HydraConfig.get()["runtime"]["output_dir"]) / "checkpoints",
                     **self.cfg.experiment.training.checkpointing,
                 )
             )
@@ -203,17 +198,17 @@ class BaseLightningExperiment(BaseExperiment):
             max_epochs=self.cfg.experiment.training.max_epochs,
             max_steps=self.cfg.experiment.training.max_steps,
             max_time=self.cfg.experiment.training.max_time,
-            accelerator='auto',
+            accelerator="auto",
             logger=self.logger,
             devices="auto",
-            strategy=DDPStrategy(
-                find_unused_parameters=False) if torch.cuda.device_count() > 1 else "auto",
+            strategy=DDPStrategy(find_unused_parameters=False) if torch.cuda.device_count() > 1 else "auto",
             callbacks=callbacks,
             val_check_interval=self.cfg.experiment.validation.check_interval,
             limit_val_batches=self.cfg.experiment.validation.limit_batch,
             check_val_every_n_epoch=self.cfg.experiment.validation.check_epoch,
             accumulate_grad_batches=self.cfg.experiment.training.optim.accumulate_grad_batches,
-            precision=self.cfg.experiment.training.precision
+            precision=self.cfg.experiment.training.precision,
+            detect_anomaly=self.cfg.experiment.debug,
         )
 
         trainer.fit(
@@ -232,11 +227,7 @@ class BaseLightningExperiment(BaseExperiment):
             callbacks.append(LearningRateMonitor("step", True))
 
         trainer = pl.Trainer(
-            accelerator="auto",
-            logger=self.logger,
-            devices="auto",
-            callbacks=callbacks,
-            precision=self.cfg.precision
+            accelerator="auto", logger=self.logger, devices="auto", callbacks=callbacks, precision=self.cfg.precision
         )
 
         # Only load the checkpoint if only testing. Otherwise, it will have been loaded
@@ -248,7 +239,7 @@ class BaseLightningExperiment(BaseExperiment):
         )
 
     def _build_dataset(self, split: str) -> Optional[torch.utils.data.Dataset]:
-        if split in ['training', 'test', 'validation']:
+        if split in ["training", "test", "validation"]:
             return self.compatible_datasets[self.cfg.dataset._name](self.cfg.dataset, split=split)
         else:
             raise NotImplementedError(f"split '{split}' is not implemented")
