@@ -63,11 +63,15 @@ class BasePytorchAlgo(pl.LightningModule, ABC):
 
         expand_shape = [1] * (len(video.shape) - 2) + [3, 1, 1]
         if std is not None:
+            if isinstance(std, (float, int)):
+                std = [std] * 3
             if isinstance(std, torch.Tensor):
                 std = std.detach().cpu().numpy()
             std = np.array(std).reshape(*expand_shape)
             video = video * std
         if mean is not None:
+            if isinstance(mean, (float, int)):
+                mean = [mean] * 3
             if isinstance(mean, torch.Tensor):
                 mean = mean.detach().cpu().numpy()
             mean = np.array(mean).reshape(*expand_shape)
@@ -113,11 +117,15 @@ class BasePytorchAlgo(pl.LightningModule, ABC):
             image = einops.rearrange(image, "b c h w -> b h w c")
 
         if std is not None:
+            if isinstance(std, (float, int)):
+                std = [std] * 3
             if isinstance(std, torch.Tensor):
                 std = std.detach().cpu().numpy()
             std = np.array(std)[None, None, None]
             image = image * std
         if mean is not None:
+            if isinstance(mean, (float, int)):
+                mean = [mean] * 3
             if isinstance(mean, torch.Tensor):
                 mean = mean.detach().cpu().numpy()
             mean = np.array(mean)[None, None, None]
