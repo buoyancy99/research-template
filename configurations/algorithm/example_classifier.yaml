@@ -5,3 +5,6 @@ arch: resnet18
 num_class: 10
 in_channels: 3
 lr: 1e-3 # overrides that in base_algorithm
+data_mean: ${dataset.mean} # inherits from 'configurations/dataset/example_cifar10.yaml'
+data_std: ${dataset.std} # inherits from 'configurations/dataset/example_cifar10.yaml'
+classes: ${dataset.classes} # inherits from 'configurations/dataset/example_cifar10.yaml'
