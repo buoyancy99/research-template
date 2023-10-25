@@ -1,3 +1,5 @@
 # inherites from base_experiment.yaml
 defaults:
   - base_experiment
+
+message: "Hello World!"

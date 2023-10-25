@@ -1,5 +1,9 @@
+from pathlib import Path
+from typing import Optional, Union
+from lightning.pytorch.loggers.wandb import WandbLogger
 import numpy as np
 import cv2
+from omegaconf import DictConfig
 
 from experiments.exp_base import BaseExperiment
 from algorithms.examples.helloworld.example_algos import ExampleAlgo, ExampleBackwardAlgo
@@ -10,6 +14,11 @@ class HelloWorldExperiment(BaseExperiment):
         "example_helloworld_1": ExampleAlgo,
         "example_helloworld_2": ExampleBackwardAlgo,
     }
+
+    def __init__(self, cfg: DictConfig, logger: WandbLogger | None = None, ckpt_path: str | Path | None = None) -> None:
+        """cfg is defined in configurations/experiments/example_helloworld.yaml."""
+        self.message = cfg.message
+        super().__init__(cfg, logger, ckpt_path)
 
     def main(self):
         """
@@ -23,12 +32,10 @@ class HelloWorldExperiment(BaseExperiment):
         """
 
         # most of your experiments should be here!
-
-        message = "Hello World!"
-        print(f"Original Message: {message}")
+        print(f"Original Message: {self.message}")
 
         # run selected algorithm specified in configurations/config.yaml
-        formatted_message = self.algo.run(message)
+        formatted_message = self.algo.run(self.message)
         print(f"Fortmatted Message: {formatted_message}")
 
         # now we show logging an image to cloud, with formatted_message in the image
