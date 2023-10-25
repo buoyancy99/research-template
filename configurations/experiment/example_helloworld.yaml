@@ -1,0 +1,3 @@
+# inherites from base_experiment.yaml
+defaults:
+  - base_experiment

@@ -1,7 +1,9 @@
 defaults:
-  - base_experiment
+  - base_pytorch
 
-# override corresponding fields in base_experiment
+tasks: [train, test] # tasks to run sequantially, change when your project has multiple stages and you want to run only a subset of them.
+
+# override corresponding fields in base_pytorch
 training:
   batch_size: 32
   max_epochs: 10

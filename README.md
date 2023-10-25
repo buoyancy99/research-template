@@ -12,9 +12,14 @@ Run `pip install -r requirements.txt` to install all dependencies.
 
 ## Run built-in example
 
-Run an experiment with a specified dataset and algorithm:
+Run an example machine-learning experiment with a specified dataset and algorithm:
+`python main.py +name=example_ml wandb.mode=online experiment=example_classification dataset=example_cifar10 algorithm=example_classifier`
 
-`python main.py +name=example_name wandb.mode=online experiment=example_classification dataset=example_cifar10 algorithm=example_classifier`
+Run a non-machine-learning example experiment:
+`python main.py +name=example_general wandb.mode=online experiment=hello_world algorithm=hello_algo1`
+
+Run a non-machine-learning example experiment, with different algorithm:
+`python main.py +name=example_general wandb.mode=online experiment=hello_world algorithm=hello_algo2`
 
 ## Modify for your own project
 
@@ -26,11 +31,11 @@ If using VScode, please modify `.vscode/settings.json` so python interpreter is 
 First [Sign up](https://wandb.ai/site) a wandb account for cloud logging and checkpointing. In command line, run `wandb login` to login.
 
 Add your method and baselines in `algorithms` following the `algorithms/README.md` as well as the example code in
-`algorithms/classifier/classifier.py`. For pytorch experiments, write your algorithm as a [pytorch lightning](https://github.com/Lightning-AI/lightning)
+`algorithms/examples/classifier/classifier.py`. For pytorch experiments, write your algorithm as a [pytorch lightning](https://github.com/Lightning-AI/lightning)
 `pl.LightningModule` which has extensive
 [documentation](https://lightning.ai/docs/pytorch/stable/). For a quick start, read "Define a LightningModule" in this [link](https://lightning.ai/docs/pytorch/stable/starter/introduction.html). Finally, add a yaml config file to `configurations/algorithm` imitating that of `configurations/algorithm/example_classifier.yaml`, for each algorithm you added.
 
-Add your dataset in `datasets` following the `datasets/README.md` as well as the example code in
+(If doing machine learning) Add your dataset in `datasets` following the `datasets/README.md` as well as the example code in
 `datasets/classification.py`. Finally, add a yaml config file to `configurations/dataset` imitating that of
 `configurations/dataset/example_cifar10.yaml`, for each dataset you added.
 

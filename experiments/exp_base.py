@@ -3,13 +3,9 @@ from typing import Optional, Union, Literal, List, Dict
 import pathlib
 import os
 
-import wandb
 import hydra
 import torch
 from lightning.pytorch.strategies.ddp import DDPStrategy
-import numpy as np
-import torch.nn as nn
-from tqdm import tqdm
 
 import lightning.pytorch as pl
 from lightning.pytorch.loggers.wandb import WandbLogger
@@ -24,6 +20,9 @@ class BaseExperiment(ABC):
     Abstract class for an experiment. This generalizes the pytorch lightning Trainer & lightning Module to more
     flexible experiments that doesn't fit in the typical ml loop, e.g. multi-stage reinforcement learning benchmarks.
     """
+
+    # each key has to be a yaml file under '[project_root]/configurations/algorithm' without .yaml suffix
+    compatible_algorithms: Dict = NotImplementedError
 
     def __init__(
         self,
@@ -44,6 +43,21 @@ class BaseExperiment(ABC):
         self.debug = cfg.debug
         self.logger = logger
         self.ckpt_path = ckpt_path
+        self.algo = self._build_algo()
+
+    def _build_algo(self):
+        """
+        Build the lightning module
+        :return:  a pytorch-lightning module to be launched
+        """
+        algo_name = self.cfg.algorithm._name
+        if algo_name not in self.compatible_algorithms:
+            raise ValueError(
+                f"Algorithm {algo_name} not found in compatible_algorithms for this Experiment class. "
+                "Make sure you define compatible_algorithms correctly and make sure that each key has "
+                "same name as yaml file under '[project_root]/configurations/algorithm' without .yaml suffix"
+            )
+        return self.compatible_algorithms[algo_name](self.cfg.algorithm)
 
     def exec_task(self, task: str) -> None:
         """
@@ -54,10 +68,14 @@ class BaseExperiment(ABC):
         Args:
             task: a string specifying a task implemented for this experiment
         """
-        if task in self.__dict__ and callable(self.__dict__[task]):
-            self.__dict__[task]()
+
+        if hasattr(self, task) and callable(getattr(self, task)):
+            print(f"== Executing task: {task} =====================")
+            getattr(self, task)()
         else:
-            raise ValueError(f"Specified task '{task}' not defined for class {self.__class__.__name__}.")
+            raise ValueError(
+                f"Specified task '{task}' not defined for class {self.__class__.__name__} or is not callable."
+            )
 
 
 class BaseLightningExperiment(BaseExperiment):
@@ -72,26 +90,10 @@ class BaseLightningExperiment(BaseExperiment):
     # each key has to be a yaml file under '[project_root]/configurations/dataset' without .yaml suffix
     compatible_datasets: Dict = NotImplementedError
 
-    def __init__(
-        self,
-        cfg: DictConfig,
-        logger: Optional[WandbLogger] = None,
-        ckpt_path: Optional[Union[str, pathlib.Path]] = None,
-    ) -> None:
-        super().__init__(cfg, logger, ckpt_path)
-        self.model = self._build_model()
-
     def _build_trainer_callbacks(self):
         callbacks = []
         if self.logger:
             callbacks.append(LearningRateMonitor("step", True))
-
-    def _build_model(self):
-        """
-        Build the lightning module
-        :return:  a pytorch-lightning module to be launched
-        """
-        return self.compatible_algorithms[self.cfg.algorithm._name](self.cfg.algorithm)
 
     def _build_training_loader(self) -> Optional[Union[TRAIN_DATALOADERS, pl.LightningDataModule]]:
         train_dataset = self._build_dataset("training")
@@ -162,7 +164,7 @@ class BaseLightningExperiment(BaseExperiment):
         )
 
         trainer.fit(
-            self.model,
+            self.algo,
             train_dataloaders=self._build_training_loader(),
             val_dataloaders=self._build_validation_loader(),
             ckpt_path=self.ckpt_path,
@@ -183,7 +185,7 @@ class BaseLightningExperiment(BaseExperiment):
         # Only load the checkpoint if only testing. Otherwise, it will have been loaded
         # and further trained during train.
         trainer.test(
-            self.model,
+            self.algo,
             dataloaders=self._build_test_loader(),
             ckpt_path=self.ckpt_path,
         )
