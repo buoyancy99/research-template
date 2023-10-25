@@ -25,13 +25,71 @@ class BasePytorchAlgo(pl.LightningModule, ABC):
 
     @abstractmethod
     def _build_model(self):
+        """
+        Create all pytorch nn.Modules here.
+        """
         raise NotImplementedError
 
     @abstractmethod
     def training_step(self, *args: Any, **kwargs: Any) -> STEP_OUTPUT:
+        r"""Here you compute and return the training loss and some additional metrics for e.g. the progress bar or
+        logger.
+
+        Args:
+            batch: The output of your data iterable, normally a :class:`~torch.utils.data.DataLoader`.
+            batch_idx: The index of this batch.
+            dataloader_idx: (only if multiple dataloaders used) The index of the dataloader that produced this batch.
+
+        Return:
+            Any of these options:
+            - :class:`~torch.Tensor` - The loss tensor
+            - ``dict`` - A dictionary. Can include any keys, but must include the key ``'loss'``.
+            - ``None`` - Skip to the next batch. This is only supported for automatic optimization.
+                This is not supported for multi-GPU, TPU, IPU, or DeepSpeed.
+
+        In this step you'd normally do the forward pass and calculate the loss for a batch.
+        You can also do fancier things like multiple forward passes or something model specific.
+
+        Example::
+
+            def training_step(self, batch, batch_idx):
+                x, y, z = batch
+                out = self.encoder(x)
+                loss = self.loss(out, x)
+                return loss
+
+        To use multiple optimizers, you can switch to 'manual optimization' and control their stepping:
+
+        .. code-block:: python
+
+            def __init__(self):
+                super().__init__()
+                self.automatic_optimization = False
+
+
+            # Multiple optimizers (e.g.: GANs)
+            def training_step(self, batch, batch_idx):
+                opt1, opt2 = self.optimizers()
+
+                # do training_step with encoder
+                ...
+                opt1.step()
+                # do training_step with decoder
+                ...
+                opt2.step()
+
+        Note:
+            When ``accumulate_grad_batches`` > 1, the loss returned here will be automatically
+            normalized by ``accumulate_grad_batches`` internally.
+
+        """
         return super().training_step(*args, **kwargs)
 
     def configure_optimizers(self):
+        """
+        Return an optimizer. If you need to use more than one optimizer, refer to pytorch lightning documentation:
+        https://lightning.ai/docs/pytorch/stable/common/optimization.html
+        """
         parameters = self.parameters()
         return torch.optim.Adam(parameters, lr=self.cfg.lr)
 

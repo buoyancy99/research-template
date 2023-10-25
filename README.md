@@ -47,7 +47,14 @@ want to use in `configurations/dataset`, or to `null` if no dataset is needed; N
 You are all set!
 
 `cd` into your project root. Now you can launch your new experiment with `python main.py +name=example_name wandb.mode=online`. For a debug run, simply remove `wandb.mode=online` to diable cloud logging. You can run baselines or
-different datasets by add arguments like `algorithm=[xxx]` or `dataset=[xxx]`.
+different datasets by add arguments like `algorithm=[xxx]` or `dataset=[xxx]`. You can also override any `yaml` configurations by following the next section.
+
+## Pass in arguments
+
+We use [hydra](https://hydra.cc) instead of `argparse` to configure arguments at every code level. You can both write a static config in `configuration` folder or, at runtime,
+[override part of yur static config](https://hydra.cc/docs/tutorials/basic/your_first_app/simple_cli/) without adding any additional code.
+
+All static config and runtime override will be logged to cloud automatically.
 
 ## Hyperparameter Sweep
 

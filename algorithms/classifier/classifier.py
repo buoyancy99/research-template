@@ -14,6 +14,7 @@ class Classifier(BasePytorchAlgo):
     """
 
     def __init__(self, cfg):
+        """cfg is a DictConfig object defined by `configurations/algorithm/example_classifier.yaml`."""
         self.num_class = cfg.num_class
         self.data_mean = cfg.data_mean
         self.data_std = cfg.data_std
@@ -21,14 +22,17 @@ class Classifier(BasePytorchAlgo):
         super().__init__(cfg)  # superclass saves cfg as self.cfg and calls _build_model
 
     def _build_model(self):
+        """create all pytorch models."""
         self.model = arch_registry[self.cfg.arch](self.num_class, self.cfg.in_channels)
         self.criterion = nn.CrossEntropyLoss()
 
     def configure_optimizers(self):
+        """Return the optimizer we want to use."""
         parameters = self.parameters()
         return torch.optim.Adam(parameters, lr=self.cfg.lr)
 
     def forward(self, inputs, targets):
+        """forward is optional, we have it here to make self.training_step simpler."""
         outputs = self.model(inputs)
         loss = self.criterion(outputs, targets)
         _, predicted = outputs.max(1)
@@ -36,6 +40,15 @@ class Classifier(BasePytorchAlgo):
         return loss, accuraccy
 
     def training_step(self, batch, batch_idx):
+        """
+        See BasePytorchAlgo class for detailed documentation.
+        Args:
+            batch: The output of your data iterable, normally a :class:`~torch.utils.data.DataLoader`.
+            batch_idx: The index of this batch.
+
+        Return:
+            A loss tensor or loss dictionary.
+        """
         inputs, targets = batch
         loss, accuraccy = self.forward(inputs, targets)
 

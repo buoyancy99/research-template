@@ -54,54 +54,10 @@ class BaseExperiment(ABC):
         Args:
             task: a string specifying a task implemented for this experiment
         """
-        if task == "train":
-            self.train()
+        if task in self.__dict__ and callable(self.__dict__[task]):
+            self.__dict__[task]()
         else:
-            raise ValueError(f"Specified task '{task}' not implemented for class {self.__class__.__name__}.")
-
-    @abstractmethod
-    def train(self) -> None:
-        """
-        All train happens here
-        """
-
-        raise NotImplementedError
-
-
-class BasePytorchExperiment(BaseExperiment, ABC):
-    """
-    Base class for a pytorch based experiment. This class is designed to allow maximum flexibility.
-    If you application is as simple as a computer vision / nlp train, you should use BaseLightningExperiment
-    """
-
-    def __init__(
-        self,
-        cfg: DictConfig,
-        logger: Optional[WandbLogger] = None,
-        ckpt_path: Optional[Union[str, pathlib.Path]] = None,
-    ) -> None:
-        super().__init__(cfg, logger, ckpt_path)
-        self.device = self._get_device("auto")
-
-    @staticmethod
-    def _get_device(device) -> torch.device:
-        """
-        Get a pytorch device object from string. Accepts auto in particular
-        :param device:
-        :return:
-        """
-        if device == "auto":
-            if torch.backends.mps.is_available() and torch.backends.mps.is_built():
-                # mac
-                device = "mps"
-            elif torch.cuda.is_available() and torch.backends.cuda.is_built():
-                # cuda
-                device = "cuda"
-            else:
-                device = "cpu"
-        print(f"Using device {device}.")
-
-        return torch.device(device)
+            raise ValueError(f"Specified task '{task}' not defined for class {self.__class__.__name__}.")
 
 
 class BaseLightningExperiment(BaseExperiment):
@@ -173,12 +129,6 @@ class BaseLightningExperiment(BaseExperiment):
         else:
             return None
 
-    def exec_task(self, task: str) -> None:
-        if task == "test":
-            self.test()
-        else:
-            super().exec_task(task)
-
     def train(self) -> None:
         """
         All training happens here
@@ -243,9 +193,3 @@ class BaseLightningExperiment(BaseExperiment):
             return self.compatible_datasets[self.cfg.dataset._name](self.cfg.dataset, split=split)
         else:
             raise NotImplementedError(f"split '{split}' is not implemented")
-
-
-class ReinforcementLearningExperiment(BasePytorchExperiment, ABC):
-    """
-    Abstract class for a reinforcement learning experiment
-    """

@@ -1,6 +1,7 @@
 defaults:
   - base_experiment
 
+# override corresponding fields in base_experiment
 training:
   batch_size: 32
   max_epochs: 10

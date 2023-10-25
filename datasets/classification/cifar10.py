@@ -6,6 +6,13 @@ import torchvision.transforms as transforms
 
 class CIFAR10Dataset(torchvision.datasets.CIFAR10):
     def __init__(self, cfg: DictConfig, split="training"):
+        """
+        A example dataset class for CIFAR10 image classification. All datasets should have the same arguments.
+        Args:
+            cfg: a DictConfig object defined by `configurations/dataset/example_cifar10.yaml`.
+            split: a string indicating which split of the dataset to use. typically "training", "validation", or "test".
+        """
+
         self.cfg = cfg
         self.mean = cfg.mean
         self.std = cfg.std
