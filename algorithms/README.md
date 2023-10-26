@@ -5,7 +5,7 @@ Content in `algorithms` can be loosely grouped components (e.g. models) or an al
 components chained together (e.g. Lightning Module, RL algo).
 You should create a folder name after your own algorithm or baselines in it.
 
-An example can be found in `classifier` subfolder.
+Two example can be found in `examples` subfolder.
 
 The `common` subfolder is designed to contain general purpose classes that's useful for many projects, e.g MLP.
 
