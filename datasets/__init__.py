@@ -1,1 +1,1 @@
-from .classification import CIFAR10Dataset
+from .example_classification import CIFAR10Dataset

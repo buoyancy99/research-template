@@ -1,2 +1,6 @@
+from unittest.mock import Mock
+
 if __name__ == "__main__":
-    print('Example Debug done!')
+    cfg = Mock()
+    cfg.a = "Example Debug done!"
+    print(cfg.a)
