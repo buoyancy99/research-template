@@ -163,6 +163,9 @@ class BaseLightningExperiment(BaseExperiment):
             detect_anomaly=self.cfg.experiment.debug,
         )
 
+        if self.debug:
+            self.logger.watch(self.model, log="all")
+
         trainer.fit(
             self.algo,
             train_dataloaders=self._build_training_loader(),
