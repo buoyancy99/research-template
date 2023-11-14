@@ -57,7 +57,7 @@ different datasets by add arguments like `algorithm=[xxx]` or `dataset=[xxx]`. Y
 ## Pass in arguments
 
 We use [hydra](https://hydra.cc) instead of `argparse` to configure arguments at every code level. You can both write a static config in `configuration` folder or, at runtime,
-[override part of yur static config](https://hydra.cc/docs/tutorials/basic/your_first_app/simple_cli/) without adding any additional code.
+[override part of yur static config](https://hydra.cc/docs/tutorials/basic/your_first_app/simple_cli/) with command line arguments.
 
 All static config and runtime override will be logged to cloud automatically.
 
