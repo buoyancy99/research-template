@@ -195,3 +195,28 @@ class BasePytorchAlgo(pl.LightningModule, ABC):
             image = [img for img in image]
 
         self.logger.log_image(key=key, images=image, **kwargs)
+
+    def log_gradient_stats(self):
+        with torch.no_grad():
+            grad_norms = []
+            gpr = []  # gradient-to-parameter ratio
+            for name, param in self.named_parameters():
+                if param.grad is not None:
+                    grad_norms.append(torch.norm(param.grad).item())
+                    gpr.append(torch.norm(param.grad) / torch.norm(param))
+            grad_norms = torch.tensor(grad_norms)
+            gpr = torch.tensor(gpr)
+            self.log_dict(
+                {
+                    "train/grad_norm/min": grad_norms.min(),
+                    "train/grad_norm/max": grad_norms.max(),
+                    "train/grad_norm/std": grad_norms.std(),
+                    "train/grad_norm/mean": grad_norms.mean(),
+                    "train/grad_norm/median": torch.median(grad_norms),
+                    "train/gpr/min": gpr.min(),
+                    "train/gpr/max": gpr.max(),
+                    "train/gpr/std": gpr.std(),
+                    "train/gpr/mean": gpr.mean(),
+                    "train/gpr/median": torch.median(gpr),
+                }
+            )
