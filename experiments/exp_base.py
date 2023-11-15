@@ -164,7 +164,7 @@ class BaseLightningExperiment(BaseExperiment):
         )
 
         if self.debug:
-            self.logger.watch(self.model, log="all")
+            self.logger.watch(self.algo, log="all")
 
         trainer.fit(
             self.algo,
