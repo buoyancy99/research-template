@@ -234,7 +234,7 @@ class BasePytorchAlgo(pl.LightningModule, ABC):
             std: the std of data.
             namespace: the namespace of the registered buffer.
         """
-        for k, v in [("mean", mean), ("std", std)]
+        for k, v in [("mean", mean), ("std", std)]:
             if isinstance(v, str):
                 if v.endswith(".npy"):
                     v = torch.from_numpy(np.load(v))
