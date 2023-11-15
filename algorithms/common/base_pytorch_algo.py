@@ -244,4 +244,4 @@ class BasePytorchAlgo(pl.LightningModule, ABC):
                     raise ValueError(f"Unsupported file type {v.split('.')[-1]}.")
             else:
                 v = torch.tensor(v)
-            self.register_buffer(f"{namespace}_{k}", v.float())
+            self.register_buffer(f"{namespace}_{k}", v.float().to(self.device))
