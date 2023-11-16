@@ -136,7 +136,7 @@ class BaseLightningExperiment(BaseExperiment):
         All training happens here
         """
         if not self.algo:
-            self._build_algo()
+            self.algo = self._build_algo()
 
         callbacks = []
         if self.logger:
@@ -182,7 +182,7 @@ class BaseLightningExperiment(BaseExperiment):
         All testing happens here
         """
         if not self.algo:
-            self._build_algo()
+            self.algo = self._build_algo()
 
         callbacks = []
         if self.logger:

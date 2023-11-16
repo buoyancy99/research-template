@@ -31,7 +31,7 @@ class HelloWorldExperiment(BaseExperiment):
         sequentially.
         """
         if not self.algo:
-            self._build_algo()
+            self.algo = self._build_algo()
 
         # most of your experiments should be here!
         print(f"Original Message: {self.message}")
