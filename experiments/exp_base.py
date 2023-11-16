@@ -161,6 +161,7 @@ class BaseLightningExperiment(BaseExperiment):
             accumulate_grad_batches=self.cfg.experiment.training.optim.accumulate_grad_batches,
             precision=self.cfg.experiment.training.precision,
             detect_anomaly=self.cfg.experiment.debug,
+            num_sanity_val_steps=int(~self.cfg.experiment.debug),
         )
 
         if self.debug:
