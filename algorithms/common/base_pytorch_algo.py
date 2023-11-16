@@ -150,7 +150,7 @@ class BasePytorchAlgo(pl.LightningModule, ABC):
     def log_image(
         self,
         key: str,
-        image: Union[np.ndarray, torch.Tensor, Image.Image],
+        image: Union[np.ndarray, torch.Tensor, Image.Image, Sequence[Image.Image]],
         mean: Union[np.ndarray, torch.Tensor, Sequence, float] = None,
         std: Union[np.ndarray, torch.Tensor, Sequence, float] = None,
         **kwargs: Any,
@@ -164,7 +164,9 @@ class BasePytorchAlgo(pl.LightningModule, ABC):
             std: optional, the std to unnormalize tensor, assuming unnormalized data is in [0, 1].
             kwargs: optional, WandbLogger log_image kwargs, such as captions=xxx.
         """
-        if not isinstance(image, Image.Image):
+        if isinstance(image, Image.Image):
+            image = [image]
+        elif len(image) and not isinstance(image[0], Image.Image):
             if isinstance(image, torch.Tensor):
                 image = image.detach().cpu().numpy()
     
