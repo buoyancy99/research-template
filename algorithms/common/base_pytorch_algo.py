@@ -7,6 +7,7 @@ from omegaconf import DictConfig
 import lightning.pytorch as pl
 import torch
 import numpy as np
+from PIL import Image
 import wandb
 import einops
 
@@ -149,7 +150,7 @@ class BasePytorchAlgo(pl.LightningModule, ABC):
     def log_image(
         self,
         key: str,
-        image: Union[np.ndarray, torch.Tensor],
+        image: Union[np.ndarray, torch.Tensor, Image.Image],
         mean: Union[np.ndarray, torch.Tensor, Sequence, float] = None,
         std: Union[np.ndarray, torch.Tensor, Sequence, float] = None,
         **kwargs: Any,
@@ -163,36 +164,37 @@ class BasePytorchAlgo(pl.LightningModule, ABC):
             std: optional, the std to unnormalize tensor, assuming unnormalized data is in [0, 1].
             kwargs: optional, WandbLogger log_image kwargs, such as captions=xxx.
         """
-        if isinstance(image, torch.Tensor):
-            image = image.detach().cpu().numpy()
-
-        if len(image.shape) == 3:
-            image = image[None]
-
-        if image.shape[1] == 3:
-            if image.shape[-1] == 3:
-                warnings.warn(f"Two channels in shape {image.shape} have size 3, assuming channel first.")
-            image = einops.rearrange(image, "b c h w -> b h w c")
-
-        if std is not None:
-            if isinstance(std, (float, int)):
-                std = [std] * 3
-            if isinstance(std, torch.Tensor):
-                std = std.detach().cpu().numpy()
-            std = np.array(std)[None, None, None]
-            image = image * std
-        if mean is not None:
-            if isinstance(mean, (float, int)):
-                mean = [mean] * 3
-            if isinstance(mean, torch.Tensor):
-                mean = mean.detach().cpu().numpy()
-            mean = np.array(mean)[None, None, None]
-            image = image + mean
-
-        if image.dtype != np.uint8:
-            image = np.clip(image, a_min=0.0, a_max=1.0) * 255
-            image = image.astype(np.uint8)
-            image = [img for img in image]
+        if not isinstance(image, Image.Image):
+            if isinstance(image, torch.Tensor):
+                image = image.detach().cpu().numpy()
+    
+            if len(image.shape) == 3:
+                image = image[None]
+    
+            if image.shape[1] == 3:
+                if image.shape[-1] == 3:
+                    warnings.warn(f"Two channels in shape {image.shape} have size 3, assuming channel first.")
+                image = einops.rearrange(image, "b c h w -> b h w c")
+    
+            if std is not None:
+                if isinstance(std, (float, int)):
+                    std = [std] * 3
+                if isinstance(std, torch.Tensor):
+                    std = std.detach().cpu().numpy()
+                std = np.array(std)[None, None, None]
+                image = image * std
+            if mean is not None:
+                if isinstance(mean, (float, int)):
+                    mean = [mean] * 3
+                if isinstance(mean, torch.Tensor):
+                    mean = mean.detach().cpu().numpy()
+                mean = np.array(mean)[None, None, None]
+                image = image + mean
+    
+            if image.dtype != np.uint8:
+                image = np.clip(image, a_min=0.0, a_max=1.0) * 255
+                image = image.astype(np.uint8)
+                image = [img for img in image]
 
         self.logger.log_image(key=key, images=image, **kwargs)
 
