@@ -43,7 +43,7 @@ class BaseExperiment(ABC):
         self.debug = cfg.debug
         self.logger = logger
         self.ckpt_path = ckpt_path
-        self.algo = self._build_algo()
+        self.algo = None
 
     def _build_algo(self):
         """
@@ -135,6 +135,9 @@ class BaseLightningExperiment(BaseExperiment):
         """
         All training happens here
         """
+        if not self.algo:
+            self._build_algo()
+
         callbacks = []
         if self.logger:
             callbacks.append(LearningRateMonitor("step", True))
@@ -178,6 +181,9 @@ class BaseLightningExperiment(BaseExperiment):
         """
         All testing happens here
         """
+        if not self.algo:
+            self._build_algo()
+
         callbacks = []
         if self.logger:
             callbacks.append(LearningRateMonitor("step", True))

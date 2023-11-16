@@ -30,6 +30,8 @@ class HelloWorldExperiment(BaseExperiment):
         at the example `configurations/experiments/classification_experiment.yaml`, it has two tasks, which wil be run
         sequentially.
         """
+        if not self.algo:
+            self._build_algo()
 
         # most of your experiments should be here!
         print(f"Original Message: {self.message}")
