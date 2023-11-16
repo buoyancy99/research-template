@@ -169,15 +169,15 @@ class BasePytorchAlgo(pl.LightningModule, ABC):
         elif len(image) and not isinstance(image[0], Image.Image):
             if isinstance(image, torch.Tensor):
                 image = image.detach().cpu().numpy()
-    
+
             if len(image.shape) == 3:
                 image = image[None]
-    
+
             if image.shape[1] == 3:
                 if image.shape[-1] == 3:
                     warnings.warn(f"Two channels in shape {image.shape} have size 3, assuming channel first.")
                 image = einops.rearrange(image, "b c h w -> b h w c")
-    
+
             if std is not None:
                 if isinstance(std, (float, int)):
                     std = [std] * 3
@@ -192,7 +192,7 @@ class BasePytorchAlgo(pl.LightningModule, ABC):
                     mean = mean.detach().cpu().numpy()
                 mean = np.array(mean)[None, None, None]
                 image = image + mean
-    
+
             if image.dtype != np.uint8:
                 image = np.clip(image, a_min=0.0, a_max=1.0) * 255
                 image = image.astype(np.uint8)
@@ -206,10 +206,12 @@ class BasePytorchAlgo(pl.LightningModule, ABC):
         with torch.no_grad():
             grad_norms = []
             gpr = []  # gradient-to-parameter ratio
-            for name, param in self.named_parameters():
+            for param in self.parameters():
                 if param.grad is not None:
                     grad_norms.append(torch.norm(param.grad).item())
                     gpr.append(torch.norm(param.grad) / torch.norm(param))
+            if len(grad_norms) == 0:
+                return
             grad_norms = torch.tensor(grad_norms)
             gpr = torch.tensor(gpr)
             self.log_dict(

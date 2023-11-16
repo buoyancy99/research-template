@@ -11,5 +11,5 @@ training:
     every_n_train_steps: 10000
 validation:
   check_interval: 1.0
-  check_epoch: 1
+  check_val_every_n_epoch: 1
   batch_size: 32
