@@ -10,6 +10,8 @@ Run `conda create python=3.10 -n [your_env_name]` to create environment.
 Run `conda activate [your_env_name]` to activate this environment.
 Run `pip install -r requirements.txt` to install all dependencies.
 
+If using VScode, please modify `.vscode/settings.json` so python interpreter is set correctly.
+
 ## Run built-in example
 
 Run an example machine-learning experiment with a specified dataset and algorithm:
@@ -25,8 +27,6 @@ Run a non-machine-learning example experiment, with different algorithm:
 
 First, create a new repository with this template. Make sure the new repository has the name you want to use for wandb
 logging.
-
-If using VScode, please modify `.vscode/settings.json` so python interpreter is set correctly.
 
 First [Sign up](https://wandb.ai/site) a wandb account for cloud logging and checkpointing. In command line, run `wandb login` to login.
 
