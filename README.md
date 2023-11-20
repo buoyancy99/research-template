@@ -1,8 +1,8 @@
 # Instructions
 
 All experiments can be launched via `python main.py [options]` where sample options for each project is provided below.
-For clusters like supercloud and satori, you can run `python submit_job.py` on login node and input options in
-the interface. It will automatically generate slurm scripts and run them for you on a compute node.
+For clusters like supercloud and satori, you can run `python scripts/submit_job.py` on login node and input options in
+my ui interface. It will automatically generate slurm scripts and run them for you on a compute node.
 
 ## Setup
 
