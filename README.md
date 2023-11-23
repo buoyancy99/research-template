@@ -28,7 +28,7 @@ Run a non-machine-learning example experiment, with different algorithm:
 We use [hydra](https://hydra.cc) instead of `argparse` to configure arguments at every code level. You can both write a static config in `configuration` folder or, at runtime,
 [override part of yur static config](https://hydra.cc/docs/tutorials/basic/your_first_app/simple_cli/) with command line arguments. 
 
-For example, arguments `algorithm=example_classifier algorithm.lr=1e-3` will override the `lr` variable set by the yaml file you choose in `configurations/algorithm/example_classifier.yaml`. The argument `wandb.mode=online` will override the `mode` under `wandb` namesspace in the file `configurations/config.yaml`.
+For example, arguments `algorithm=example_classifier algorithm.lr=1e-3` will override the `lr` variable in `configurations/algorithm/example_classifier.yaml`. The argument `wandb.mode=online` will override the `mode` under `wandb` namesspace in the file `configurations/config.yaml`.
 
 All static config and runtime override will be logged to cloud automatically.
 
