@@ -15,13 +15,13 @@ If using VScode, please modify `.vscode/settings.json` so python interpreter is 
 ## Run built-in example
 
 Run an example machine-learning experiment with a specified dataset and algorithm:
-`python main.py +name=example_ml wandb.mode=online experiment=example_classification dataset=example_cifar10 algorithm=example_classifier`
+`python main.py +name=xxxx wandb.mode=online experiment=example_classification dataset=example_cifar10 algorithm=example_classifier`
 
 Run a non-machine-learning example experiment:
-`python main.py +name=example_general wandb.mode=online experiment=hello_world algorithm=hello_algo1`
+`python main.py +name=yyyy wandb.mode=online experiment=hello_world algorithm=hello_algo1`
 
 Run a non-machine-learning example experiment, with different algorithm:
-`python main.py +name=example_general wandb.mode=online experiment=hello_world algorithm=hello_algo2`
+`python main.py +name=zzzz wandb.mode=online experiment=hello_world algorithm=hello_algo2`
 
 ## Modify for your own project
 
