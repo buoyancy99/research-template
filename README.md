@@ -62,7 +62,7 @@ We use [hydra](https://hydra.cc) instead of `argparse` to configure arguments at
 All static config and runtime override will be logged to cloud automatically.
 
 ## Debug
-We provide a useful debug flag which you can enable by `python main.py debug=True`. This will enable numerical error tracking as well as setting `cfg.debug` to `True` for your algorithms and datasets class.
+We provide a useful debug flag which you can enable by `python main.py debug=True`. This will enable numerical error tracking as well as setting `cfg.debug` to `True` for your algorithms and datasets class. However, this debug flag will make ML code very slow as it automatically tracks all parameter / gradients!
 
 ## Hyperparameter Sweep
 
