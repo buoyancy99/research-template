@@ -68,3 +68,25 @@ We provide a useful debug flag which you can enable by `python main.py debug=Tru
 
 Launch hyperparameter sweep via: `wandb sweep configurations/sweep/example_sweep.yaml`
 Then, launch sweep agents on different servers by running the command printed by the controller (e.g., `wandb agent <agent_id>`).
+
+
+## Feature Roadmap
+
+| **Features**                  | **This repo** |
+| ---------------------------   | ----------------------|
+| README level documentation    | :heavy_check_mark: |
+| Examples  (ML & Non ML)       | :heavy_check_mark: |
+| Cloud checkpoint save / load  | :heavy_check_mark: |
+| Cloud logging                 | :heavy_check_mark: |
+| Hyper-parameter logging       | :heavy_check_mark: |
+| Static yaml configuration     | :heavy_check_mark: |
+| Yaml config override by arugment  | :heavy_check_mark: |
+| Submit UI for MIT cluster     | :heavy_check_mark: |
+| Distributed training          | :heavy_check_mark: |
+| Low precision training        | :heavy_check_mark: |
+| Distributed hyper-parameter sweep | :heavy_check_mark: |
+| Debug mode                    | :heavy_check_mark: |
+| PEP 8 Style                   | :heavy_check_mark: |
+| Type hints                    | :heavy_check_mark: |
+| Wiki style documentation      | :x: |
+| Unit test                     | :x: |
