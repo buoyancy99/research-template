@@ -1,3 +1,8 @@
+"""
+Main file for the project. This will create and run new experiments and load checkpoints from wandb. 
+Borrowed part of the code from David Charatan and wandb.
+"""
+
 import os
 import sys
 from datetime import timedelta
@@ -18,8 +23,7 @@ from experiments import build_experiment
 def process_checkpointing_cfg(cfg: DictConfig) -> Dict[str, Any]:
     params = {**cfg}
     if "train_time_interval" in params:
-        params["train_time_interval"] = timedelta(
-            **params["train_time_interval"])
+        params["train_time_interval"] = timedelta(**params["train_time_interval"])
     return params  # type: ignore
 
 
@@ -31,10 +35,7 @@ def process_checkpointing_cfg(cfg: DictConfig) -> Dict[str, Any]:
 def run(cfg: DictConfig):
     # Enforce the correct Python version.
     if sys.version_info.major < 3 or sys.version_info.minor < 9:
-        print(
-            "Please use Python 3.9+. If on IBM Satori, "
-            "install Anaconda3-2022.10-Linux-ppc64le.sh"
-        )
+        print("Please use Python 3.9+. If on IBM Satori, " "install Anaconda3-2022.10-Linux-ppc64le.sh")
 
     # Get yaml names
     hydra_cfg = hydra.core.hydra_config.HydraConfig.get()
@@ -53,24 +54,20 @@ def run(cfg: DictConfig):
     # Set up logging with wandb.
     if cfg.wandb.mode != "disabled":
         if "name" not in cfg:
-            raise ValueError(
-                "must specify a name for the run with command line argument '+name=[name]'")
+            raise ValueError("must specify a name for the run with command line argument '+name=[name]'")
 
         if "entity" not in cfg.wandb:
             raise ValueError(
                 "must specify wandb entity in 'configurations/config.yaml' or with command line"
-                " argument '+wandb.entity=[entity]' \n An entity is your wandb user name or group name.")
+                " argument '+wandb.entity=[entity]' \n An entity is your wandb user name or group name."
+            )
 
         if cfg.wandb.project is None:
             cfg.wandb.project = str(Path(__file__).parent.name)
 
         # If resuming, merge into the existing run on wandb.
         resume_id = cfg.wandb.get("resume", None)
-        name = (
-            f"{cfg.name} ({output_dir.parent.name}/{output_dir.name})"
-            if resume_id is None
-            else None
-        )
+        name = f"{cfg.name} ({output_dir.parent.name}/{output_dir.name})" if resume_id is None else None
         logger = WandbLogger(
             project=cfg.wandb.project,
             mode=cfg.wandb.mode,
@@ -92,9 +89,7 @@ def run(cfg: DictConfig):
     resume_id = cfg.wandb.get("resume", None)
     if resume_id is not None:
         run_path = f"{cfg.wandb.entity}/{cfg.wandb.project}/{resume_id}"
-        checkpoint_path = download_latest_checkpoint(
-            run_path, Path("outputs/loaded_checkpoints")
-        )
+        checkpoint_path = download_latest_checkpoint(run_path, Path("outputs/loaded_checkpoints"))
         checkpoint_path = rewrite_checkpoint_for_compatibility(checkpoint_path)
     else:
         checkpoint_path = None

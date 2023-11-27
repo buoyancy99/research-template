@@ -1,6 +1,8 @@
 """
 This script is written for MIT's Supercloud & Satori. Adding your own cluster is easy, just search for Satori in this 
 file and modify accordingly.
+
+Original code by David Charatan
 """
 
 
@@ -152,7 +154,7 @@ def start_slurm_job(
         "SuperCloud": "volta:",
     }[detect_cluster()]
 
-    script = f'python3 -m main +name={name} wandb.mode={wandb_mode} {additions}'
+    script = f"python3 -m main +name={name} wandb.mode={wandb_mode} {additions}"
 
     environment_setup = {
         # Satori environment setup:
