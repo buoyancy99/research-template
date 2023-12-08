@@ -159,7 +159,7 @@ class BaseLightningExperiment(BaseExperiment):
             strategy=DDPStrategy(find_unused_parameters=False) if torch.cuda.device_count() > 1 else "auto",
             callbacks=callbacks,
             val_check_interval=self.cfg.experiment.validation.val_every_n_step,
-            limit_val_batches=self.cfg.experiment.validation.limit_val_batches,
+            limit_val_batches=self.cfg.experiment.validation.limit_batch,
             check_val_every_n_epoch=self.cfg.experiment.validation.val_every_n_epoch,
             accumulate_grad_batches=self.cfg.experiment.training.optim.accumulate_grad_batches,
             precision=self.cfg.experiment.training.precision,
@@ -189,7 +189,17 @@ class BaseLightningExperiment(BaseExperiment):
             callbacks.append(LearningRateMonitor("step", True))
 
         trainer = pl.Trainer(
-            accelerator="auto", logger=self.logger, devices="auto", callbacks=callbacks, precision=self.cfg.precision
+            max_epochs=self.cfg.experiment.test.max_epochs,
+            max_steps=self.cfg.experiment.test.max_steps,
+            max_time=self.cfg.experiment.test.max_time,
+            accelerator="auto",
+            logger=self.logger,
+            devices="auto",
+            strategy=DDPStrategy(find_unused_parameters=False) if torch.cuda.device_count() > 1 else "auto",
+            callbacks=callbacks,
+            limit_test_batches=self.cfg.experiment.test.limit_batch,
+            precision=self.cfg.experiment.test.precision,
+            detect_anomaly=self.cfg.experiment.debug,
         )
 
         # Only load the checkpoint if only testing. Otherwise, it will have been loaded
