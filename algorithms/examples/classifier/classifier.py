@@ -9,8 +9,11 @@ from .models import arch_registry
 
 class Classifier(BasePytorchAlgo):
     """
-    A sample algorithm doing classification for CIFAR-10
+    A sample algorithm doing classification for CIFAR-10.
     Adopted from https://github.com/kuangliu/pytorch-cifar
+
+    For fancy examples in pytorch lightning, such as GANs with multiple optimizers,
+    see https://lightning.ai/docs/pytorch/stable/ for more details.
     """
 
     def __init__(self, cfg):
