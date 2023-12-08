@@ -17,10 +17,10 @@ If using VScode, please modify `.vscode/settings.json` so python interpreter is 
 Run an example machine-learning experiment with a specified dataset and algorithm:
 `python main.py +name=xxxx wandb.mode=online experiment=example_classification dataset=example_cifar10 algorithm=example_classifier`
 
-Run a non-machine-learning example experiment:
+Run a generic example experiment (not necessarily ML):
 `python main.py +name=yyyy wandb.mode=online experiment=hello_world algorithm=hello_algo1`
 
-Run a non-machine-learning example experiment, with different algorithm:
+Run a generic example experiment, with different algorithm:
 `python main.py +name=zzzz wandb.mode=online experiment=hello_world algorithm=hello_algo2`
 
 ## Pass in arguments
