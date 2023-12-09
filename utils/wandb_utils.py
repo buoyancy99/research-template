@@ -1,8 +1,68 @@
 from pathlib import Path
-from typing import Optional
-
+from typing import TYPE_CHECKING, Any, Dict, List, Literal, Mapping, Optional, Union
+from types import MethodType
+from functools import wraps
 import torch
 import wandb
+import time
+from lightning.pytorch.loggers.wandb import WandbLogger
+from wandb_osh.hooks import TriggerWandbSyncHook
+
+
+class OfflineWandbLogger(WandbLogger):
+    def __init__(
+        self,
+        name=None,
+        save_dir=".",
+        version=None,
+        offline=False,
+        dir=None,
+        id=None,
+        anonymous=None,
+        project=None,
+        log_model=False,
+        experiment=None,
+        prefix="",
+        checkpoint_name=None,
+        **kwargs: Any,
+    ) -> None:
+        communication_dir = Path("outputs/.wandb_osh_command_dir")
+        communication_dir.mkdir(parents=True, exist_ok=True)
+        self.trigger_sync = TriggerWandbSyncHook(communication_dir)
+        self.last_sync_time = time.time()
+        self.min_sync_interval = 60
+
+        super().__init__(
+            name=name,
+            save_dir=save_dir,
+            version=version,
+            offline=offline,
+            dir=dir,
+            id=id,
+            anonymous=anonymous,
+            project=project,
+            log_model=log_model,
+            experiment=experiment,
+            prefix=prefix,
+            checkpoint_name=checkpoint_name,
+            **kwargs,
+        )
+
+    def _wrapper(self, func):
+        @wraps(func)
+        def wrapped(*args, **kwargs):
+            if time.time() - self.last_sync_time > self.min_sync_interval:
+                self.trigger_sync(self._save_dir)
+                self.last_sync_time = time.time()
+            return func(*args, **kwargs)
+
+        return wrapped
+
+    def __getattribute__(self, name):
+        attr = super().__getattribute__(name)
+        if isinstance(attr, MethodType) and not name.startswith("_"):
+            attr = self._wrapper(attr)
+        return attr
 
 
 def version_to_int(artifact) -> int:

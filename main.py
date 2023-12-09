@@ -5,6 +5,7 @@ Borrowed part of the code from David Charatan and wandb.
 
 import os
 import sys
+import click
 from datetime import timedelta
 from pathlib import Path
 from typing import Any, Dict
@@ -15,11 +16,9 @@ import wandb
 from omegaconf import DictConfig, OmegaConf
 from omegaconf.omegaconf import open_dict
 from lightning.pytorch.loggers.wandb import WandbLogger
+from wandb_osh.syncer import WandbSyncer
 
-from utils.wandb_utils import (
-    download_latest_checkpoint,
-    rewrite_checkpoint_for_compatibility,
-)
+from utils.wandb_utils import download_latest_checkpoint, OfflineWandbLogger
 from utils.cluster_utils import submit_slurm_job
 from experiments import build_experiment
 
@@ -56,7 +55,13 @@ def run_local(cfg: DictConfig):
         # If resuming, merge into the existing run on wandb.
         resume_id = cfg.wandb.get("resume", None)
         name = f"{cfg.name} ({output_dir.parent.name}/{output_dir.name})" if resume_id is None else None
-        logger = WandbLogger(
+
+        if "_on_compute_node" in cfg and cfg.cluster.is_compute_node_offline:
+            logger_cls = OfflineWandbLogger
+        else:
+            logger_cls = WandbLogger
+
+        logger = logger_cls(
             project=cfg.wandb.project,
             mode=cfg.wandb.mode,
             name=name,
@@ -106,6 +111,17 @@ def run_slurm(cfg: DictConfig):
         project_root,
     )
 
+    if "cluster" in cfg and cfg.cluster.is_compute_node_offline and cfg.wandb.mode == "online":
+        print(
+            "Job submitted to a compute node without internet. To sync the run in real time, it's recommended to run 'wandb-osh' or 'wandb-osh -- --sync-all'."
+        )
+
+        if click.confirm("Do you want us to run the sync loop for you?", default=True):
+            wandb_osh = WandbSyncer(command_dir="outputs/.wandb_osh_command_dir")
+            wandb_osh.loop()
+        else:
+            print("To sync the run in real-time, run 'wandb-osh' or 'wandb-osh -- --sync-all'.")
+
 
 @hydra.main(
     version_base=None,
@@ -134,9 +150,9 @@ def run(cfg: DictConfig):
     resume_id = cfg.wandb.get("resume", None)
     if resume_id and "_on_compute_node" not in cfg:
         run_path = f"{cfg.wandb.entity}/{cfg.wandb.project}/{resume_id}"
-        checkpoint_path = download_latest_checkpoint(run_path, Path("outputs/loaded_checkpoints"))
+        download_latest_checkpoint(run_path, Path("outputs/loaded_checkpoints"))
 
-    if cfg.get("cluster", None) and not "_on_compute_node" in cfg:
+    if "cluster" in cfg and not "_on_compute_node" in cfg:
         run_slurm(cfg)
     else:
         run_local(cfg)
