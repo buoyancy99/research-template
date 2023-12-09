@@ -15,7 +15,9 @@ class HelloWorldExperiment(BaseExperiment):
         "example_helloworld_2": ExampleBackwardAlgo,
     }
 
-    def __init__(self, cfg: DictConfig, logger: WandbLogger | None = None, ckpt_path: str | Path | None = None) -> None:
+    def __init__(
+        self, cfg: DictConfig, logger: Optional[WandbLogger] = None, ckpt_path: Optional[Union[str, Path]] = None
+    ) -> None:
         """cfg is defined in configurations/experiments/example_helloworld.yaml."""
         self.message = cfg.message
         super().__init__(cfg, logger, ckpt_path)
