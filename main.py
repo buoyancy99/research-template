@@ -134,7 +134,6 @@ def run(cfg: DictConfig):
     if resume_id and "_on_compute_node" not in cfg:
         run_path = f"{cfg.wandb.entity}/{cfg.wandb.project}/{resume_id}"
         checkpoint_path = download_latest_checkpoint(run_path, Path("outputs/loaded_checkpoints"))
-        rewrite_checkpoint_for_compatibility(checkpoint_path)
 
     if cfg.get("cluster", None) and not "_on_compute_node" in cfg:
         run_slurm(cfg)
