@@ -145,6 +145,7 @@ outputs/
 .hydra
 
 /slurm_logs/
+/.wandb_osh_command_dir/
 
 checkpoints
 

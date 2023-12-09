@@ -78,7 +78,7 @@ def run_local(cfg: DictConfig):
     else:
         logger = None
 
-    # If resuming a run, download the checkpoint.
+    # Resuming a run,
     resume_id = cfg.wandb.get("resume", None)
     if resume_id is not None:
         run_path = f"{cfg.wandb.entity}/{cfg.wandb.project}/{resume_id}"
@@ -117,7 +117,8 @@ def run_slurm(cfg: DictConfig):
         )
 
         if click.confirm("Do you want us to run the sync loop for you?", default=True):
-            wandb_osh = WandbSyncer(command_dir="outputs/.wandb_osh_command_dir")
+            print("Running wandb-osh... (press Ctrl+C to stop)")
+            wandb_osh = WandbSyncer(command_dir=".wandb_osh_command_dir")
             wandb_osh.loop()
         else:
             print("To sync the run in real-time, run 'wandb-osh' or 'wandb-osh -- --sync-all'.")

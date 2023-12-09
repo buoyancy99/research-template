@@ -26,7 +26,7 @@ class OfflineWandbLogger(WandbLogger):
         checkpoint_name=None,
         **kwargs: Any,
     ) -> None:
-        communication_dir = Path("outputs/.wandb_osh_command_dir")
+        communication_dir = Path(".wandb_osh_command_dir")
         communication_dir.mkdir(parents=True, exist_ok=True)
         self.trigger_sync = TriggerWandbSyncHook(communication_dir)
         self.last_sync_time = time.time()
