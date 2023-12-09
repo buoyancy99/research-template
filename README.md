@@ -1,8 +1,9 @@
 # Instructions
 
 All experiments can be launched via `python -m main [options]` where sample options for each project is provided below.
-For clusters like supercloud and satori, you can run `python scripts/submit_job.py` on login node and input options in
-my ui interface. It will automatically generate slurm scripts and run them for you on a compute node.
+
+For slurm clusters like supercloud, you can run `python -m main cluster=mit_supercloud [options]` on login node. It will automatically generate slurm scripts and run them for you on a compute node. Even though compute nodes are offline, 
+the script will still automatically sync wandb logging to cloud with <1min latency. 
 
 ## Setup
 
@@ -70,6 +71,11 @@ We provide a useful debug flag which you can enable by `python main.py debug=Tru
 
 Launch hyperparameter sweep via: `wandb sweep configurations/sweep/example_sweep.yaml`
 Then, launch sweep agents on different servers by running the command printed by the controller (e.g., `wandb agent <agent_id>`).
+
+
+## Add slurm clusters
+It's very easy to add your own slurm clusters via adding a yaml file in `configurations/cluster`. You can take a look 
+at `mit_supercloud.yaml` for example. 
 
 
 ## Feature Roadmap

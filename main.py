@@ -62,11 +62,11 @@ def run_local(cfg: DictConfig):
             logger_cls = WandbLogger
 
         logger = logger_cls(
-            project=cfg.wandb.project,
-            mode=cfg.wandb.mode,
             name=name,
-            log_model="all",
             save_dir=str(output_dir),
+            offline=cfg.wandb.mode != "online",
+            project=cfg.wandb.project,
+            log_model="all",
             config=OmegaConf.to_container(cfg),
             id=None if cfg.wandb.get("use_new_id", False) else resume_id,
         )

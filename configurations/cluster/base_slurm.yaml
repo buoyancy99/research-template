@@ -1,4 +1,4 @@
-is_compute_node_offline: False
+is_compute_node_offline: True  # many slurm systems only allows internet on login node, not compute node
 
 num_gpus: 1
 num_cpus: 32
