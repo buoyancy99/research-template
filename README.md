@@ -1,6 +1,6 @@
 # Instructions
 
-All experiments can be launched via `python main.py [options]` where sample options for each project is provided below.
+All experiments can be launched via `python -m main [options]` where sample options for each project is provided below.
 For clusters like supercloud and satori, you can run `python scripts/submit_job.py` on login node and input options in
 my ui interface. It will automatically generate slurm scripts and run them for you on a compute node.
 
@@ -15,13 +15,13 @@ If using VScode, please modify `.vscode/settings.json` so python interpreter is 
 ## Run built-in example
 
 Run an example machine-learning experiment with a specified dataset and algorithm:
-`python main.py +name=xxxx wandb.mode=online experiment=example_classification dataset=example_cifar10 algorithm=example_classifier`
+`python -m main +name=xxxx wandb.mode=online experiment=example_classification dataset=example_cifar10 algorithm=example_classifier`
 
 Run a generic example experiment (not necessarily ML):
-`python main.py +name=yyyy wandb.mode=online experiment=hello_world algorithm=hello_algo1`
+`python -m main +name=yyyy wandb.mode=online experiment=hello_world algorithm=hello_algo1`
 
 Run a generic example experiment, with different algorithm:
-`python main.py +name=zzzz wandb.mode=online experiment=hello_world algorithm=hello_algo2`
+`python -m main +name=zzzz wandb.mode=online experiment=hello_world algorithm=hello_algo2`
 
 ## Pass in arguments
 

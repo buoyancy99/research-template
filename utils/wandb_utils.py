@@ -10,9 +10,9 @@ def version_to_int(artifact) -> int:
     return int(artifact.version[1:])
 
 
-def download_latest_checkpoint(run_id: str, download_dir: Path) -> Path:
+def download_latest_checkpoint(run_path: str, download_dir: Path) -> Path:
     api = wandb.Api()
-    run = api.run(run_id)
+    run = api.run(run_path)
 
     # Find the latest saved model checkpoint.
     latest = None
@@ -25,7 +25,7 @@ def download_latest_checkpoint(run_id: str, download_dir: Path) -> Path:
 
     # Download the checkpoint.
     download_dir.mkdir(exist_ok=True, parents=True)
-    root = download_dir / run_id
+    root = download_dir / run_path
     latest.download(root=root)
     return root / "model.ckpt"
 
