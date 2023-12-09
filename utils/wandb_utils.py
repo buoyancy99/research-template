@@ -10,6 +10,12 @@ from wandb_osh.hooks import TriggerWandbSyncHook
 
 
 class OfflineWandbLogger(WandbLogger):
+    """
+    Wraps WandbLogger to trigger offline sync hook occasionally.
+    This is useful when running on slurm clusters, many of which
+    only has internet on login nodes, not compute nodes.
+    """
+
     def __init__(
         self,
         name=None,
@@ -36,7 +42,7 @@ class OfflineWandbLogger(WandbLogger):
             name=name,
             save_dir=save_dir,
             version=version,
-            offline=offline,
+            offline=False,
             dir=dir,
             id=id,
             anonymous=anonymous,
@@ -47,6 +53,7 @@ class OfflineWandbLogger(WandbLogger):
             checkpoint_name=checkpoint_name,
             **kwargs,
         )
+        self._offline = offline
 
     def _wrapper(self, func):
         @wraps(func)
