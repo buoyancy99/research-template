@@ -32,7 +32,7 @@ def submit_slurm_job(
     (project_root / "slurm_logs" / "latest").unlink(missing_ok=True)
     (project_root / "slurm_logs" / "latest").symlink_to(log_dir, target_is_directory=True)
 
-    slurm_script = cfg.launch_template.format(
+    slurm_script = cfg.cluster.launch_template.format(
         name=cfg.name,
         log_dir=log_dir,
         email=cfg.cluster.email,
