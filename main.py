@@ -78,6 +78,7 @@ def run_local(cfg: DictConfig):
     if resume_id is not None:
         run_path = f"{cfg.wandb.entity}/{cfg.wandb.project}/{resume_id}"
         checkpoint_path = Path("outputs/loaded_checkpoints") / run_path / "model.ckpt"
+        print(f"Will load checkpoint from {checkpoint_path}")
     else:
         checkpoint_path = None
 
