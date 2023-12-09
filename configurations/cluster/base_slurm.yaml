@@ -3,7 +3,5 @@ is_compute_node_offline: False
 num_gpus: 1
 num_cpus: 32
 memory: 32G
-time: null # Acceptable time formats include "minutes", "minutes:seconds", "hours:minutes:seconds", "days-hours", "days-hours:minutes" and "days-hours:minutes:seconds".
+time: "24:0:0" # Acceptable time formats include "minutes", "minutes:seconds", "hours:minutes:seconds", "days-hours", "days-hours:minutes" and "days-hours:minutes:seconds".
 email: null
-conda_env: null # Name for conda environment to activate on compute node
-
