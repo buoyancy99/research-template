@@ -2,14 +2,19 @@
 
 All experiments can be launched via `python -m main [options]` where sample options for each project is provided below.
 
-For slurm clusters like supercloud, you can run `python -m main cluster=mit_supercloud [options]` on login node. It will automatically generate slurm scripts and run them for you on a compute node. Even though compute nodes are offline, 
-the script will still automatically sync wandb logging to cloud with <1min latency. 
+For slurm clusters e.g. mit supercloud, you can run `python -m main cluster=mit_supercloud [options]` on login node. 
+It will automatically generate slurm scripts and run them for you on a compute node. Even if compute nodes are offline, 
+the script will still automatically sync wandb logging to cloud with <1min latency. It's also easy to add your own slurm
+by following the `Add slurm clusters` section.
 
 ## Setup
 
 Run `conda create python=3.10 -n [your_env_name]` to create environment.
 Run `conda activate [your_env_name]` to activate this environment.
 Run `pip install -r requirements.txt` to install all dependencies.
+
+[Sign up](https://wandb.ai/site) a wandb account for cloud logging and checkpointing. In command line, run `wandb login` to login.
+Please modify the wandb entity (account) in `configurations/config.yaml`.
 
 If using VScode, please modify `.vscode/settings.json` so python interpreter is set correctly.
 
@@ -37,8 +42,6 @@ All static config and runtime override will be logged to cloud automatically.
 
 First, create a new repository with this template. Make sure the new repository has the name you want to use for wandb
 logging.
-
-First [Sign up](https://wandb.ai/site) a wandb account for cloud logging and checkpointing. In command line, run `wandb login` to login.
 
 Add your method and baselines in `algorithms` following the `algorithms/README.md` as well as the example code in
 `algorithms/examples/classifier/classifier.py`. For pytorch experiments, write your algorithm as a [pytorch lightning](https://github.com/Lightning-AI/lightning)
@@ -75,7 +78,7 @@ Then, launch sweep agents on different servers by running the command printed by
 
 ## Add slurm clusters
 It's very easy to add your own slurm clusters via adding a yaml file in `configurations/cluster`. You can take a look 
-at `mit_supercloud.yaml` for example. 
+at `configurations/cluster/mit_supercloud.yaml` for example. 
 
 
 ## Feature Roadmap
