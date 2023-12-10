@@ -123,11 +123,10 @@ def run_slurm(cfg: DictConfig):
             if click.confirm("Do you want us to run the sync loop for you?", default=True):
                 osh_proc = subprocess.Popen(["wandb-osh", "--command-dir", osh_command_dir])
                 print(f"Running wandb-osh in background... PID: {osh_proc.pid}")
+                print(cyan(f"To kill the process, run 'kill {osh_proc.pid}' in the terminal."))
 
-            print(
-                cyan("Once the job gets allocated and starts running, output will be printed below: (Ctrl + C to exit)")
-            )
-            while not slurm_log_dir.glob("*.out"):
+            print("Once the job gets allocated and starts running, output will be printed below: (Ctrl + C to exit)")
+            while not list(slurm_log_dir.glob("*.out")):
                 time.sleep(1)
             tail_proc = subprocess.Popen(
                 ["tail", "-f", slurm_log_dir / "*.out"], stdout=subprocess.PIPE, stderr=subprocess.PIPE
