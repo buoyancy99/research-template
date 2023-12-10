@@ -122,11 +122,9 @@ def run_slurm(cfg: DictConfig):
             osh_proc = subprocess.Popen(["wandb-osh", "--command-dir", osh_command_dir])
             print(f"Running wandb-osh in background... PID: {osh_proc.pid}")
             print(f"To kill the background sync process, run 'kill {osh_proc.pid}'.")
-        else:
-            print(f"You can manually start a sync loop & get wandb link later by running the following:")
-            print(cyan(f"wandb-osh --command-dir {osh_command_dir}"))
-        print("Job is submitted to slurm, you can check the status with 'squeue -u $USER'.")
-        print("Once the job starts, job output will be print below: (Ctrl + C to exit)")
+        print(f"You can manually start a sync loop & get wandb link later by running the following:")
+        print(cyan(f"wandb-osh --command-dir {osh_command_dir}"))
+        print("Once the job gets allocated and starts running, output will be printed below: (Ctrl + C to exit)")
         tail_proc = subprocess.Popen(
             ["tail", "-f", slurm_log_dir / "*.out"], stdout=subprocess.PIPE, stderr=subprocess.PIPE
         )
@@ -135,7 +133,7 @@ def run_slurm(cfg: DictConfig):
 
         while True:
             if p.poll(1):
-                print(tail_proc.stdout.readline())
+                print(tail_proc.stdout.readline().strip().decode("utf-8"))
             time.sleep(1)
 
 
