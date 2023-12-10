@@ -118,25 +118,29 @@ def run_slurm(cfg: DictConfig):
     if "cluster" in cfg and cfg.cluster.is_compute_node_offline and cfg.wandb.mode == "online":
         print("Job submitted to a compute node without internet. This requires manual syncing on login node.")
         osh_command_dir = project_root / ".wandb_osh_command_dir"
-        if click.confirm("Do you want us to run the sync loop for you?", default=True):
-            osh_proc = subprocess.Popen(["wandb-osh", "--command-dir", osh_command_dir])
-            print(f"Running wandb-osh in background... PID: {osh_proc.pid}")
-            print(f"To kill the background sync process, run 'kill {osh_proc.pid}'.")
-        print(f"You can manually start a sync loop & get wandb link later by running the following:")
-        print(cyan(f"wandb-osh --command-dir {osh_command_dir}"))
-        print("Once the job gets allocated and starts running, output will be printed below: (Ctrl + C to exit)")
-        tail_proc = subprocess.Popen(
-            ["tail", "-f", slurm_log_dir / "*.out"], stdout=subprocess.PIPE, stderr=subprocess.PIPE
-        )
-        p = select.poll()
-        p.register(tail_proc.stdout)
 
-        while True:
-            if p.poll(1):
-                out = tail_proc.stdout.readline().strip().decode("utf-8")
-                if out:
-                    print(out)
-            time.sleep(1)
+        try:
+            if click.confirm("Do you want us to run the sync loop for you?", default=True):
+                osh_proc = subprocess.Popen(["wandb-osh", "--command-dir", osh_command_dir])
+                print(f"Running wandb-osh in background... PID: {osh_proc.pid}")
+                print(f"To kill the background sync process, run 'kill {osh_proc.pid}'.")
+
+            print("Once the job gets allocated and starts running, output will be printed below: (Ctrl + C to exit)")
+            tail_proc = subprocess.Popen(
+                ["tail", "-f", slurm_log_dir / "*.out"], stdout=subprocess.PIPE, stderr=subprocess.PIPE
+            )
+            p = select.poll()
+            p.register(tail_proc.stdout)
+
+            while True:
+                if p.poll(1):
+                    out = tail_proc.stdout.readline().strip().decode("utf-8")
+                    if out:
+                        print(out)
+                time.sleep(1)
+        except KeyboardInterrupt:
+            print(f"You can manually start a sync loop & get wandb link later by running the following:")
+            print(cyan(f"wandb-osh --command-dir {osh_command_dir}"))
 
 
 @hydra.main(
