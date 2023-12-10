@@ -133,7 +133,9 @@ def run_slurm(cfg: DictConfig):
 
         while True:
             if p.poll(1):
-                print(tail_proc.stdout.readline().strip().decode("utf-8"))
+                out = tail_proc.stdout.readline().strip().decode("utf-8")
+                if out:
+                    print(out)
             time.sleep(1)
 
 
