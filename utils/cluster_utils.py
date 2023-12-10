@@ -51,4 +51,4 @@ def submit_slurm_job(
     os.system(f"chmod +x {slurm_script_path}")
     os.system(f"sbatch {slurm_script_path}")
 
-    print(f"\n{cyan('script:')} {slurm_script_path}\n {cyan('slurm errors and logs:')} {log_dir}\n")
+    print(f"\n{cyan('script:')} {slurm_script_path}\n{cyan('slurm errors and logs:')} {log_dir}\n")

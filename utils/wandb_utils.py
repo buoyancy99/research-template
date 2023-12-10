@@ -1,11 +1,13 @@
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Dict, List, Literal, Mapping, Optional, Union
 from types import MethodType
+from typing_extensions import override
 from functools import wraps
 import torch
 import wandb
 import time
 from lightning.pytorch.loggers.wandb import WandbLogger
+from lightning.pytorch.utilities.rank_zero import rank_zero_only
 from wandb_osh.hooks import TriggerWandbSyncHook
 
 
@@ -55,21 +57,14 @@ class OfflineWandbLogger(WandbLogger):
         )
         self._offline = offline
 
-    def _wrapper(self, func):
-        @wraps(func)
-        def wrapped(*args, **kwargs):
-            if time.time() - self.last_sync_time > self.min_sync_interval:
-                self.trigger_sync(self._save_dir)
-                self.last_sync_time = time.time()
-            return func(*args, **kwargs)
-
-        return wrapped
-
-    def __getattribute__(self, name):
-        attr = super().__getattribute__(name)
-        if isinstance(attr, MethodType) and not name.startswith("_"):
-            attr = self._wrapper(attr)
-        return attr
+    @override
+    @rank_zero_only
+    def log_metrics(self, metrics: Mapping[str, float], step: Optional[int] = None) -> None:
+        out = super().log_metrics(metrics, step)
+        if time.time() - self.last_sync_time > self.min_sync_interval:
+            self.trigger_sync(self._save_dir)
+            self.last_sync_time = time.time()
+        return out
 
 
 def version_to_int(artifact) -> int:
