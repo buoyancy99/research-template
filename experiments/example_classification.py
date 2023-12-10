@@ -23,3 +23,11 @@ class ClassificationExperiment(BaseLightningExperiment):
     compatible_datasets = dict(
         example_cifar10=CIFAR10Dataset,
     )
+
+    """
+    This experiment class seems empty because all tasks, [train, validation, test]
+    are already implemented in BaseLightningExperiment. If you have a new task,
+    you can add the method here and put it in the yaml file in `configurations/experiment`.
+
+    For example, `experiments/example_helloworld.py` has a task called `main`.
+    """
