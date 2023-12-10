@@ -120,19 +120,21 @@ def run_slurm(cfg: DictConfig):
         osh_command_dir = project_root / ".wandb_osh_command_dir"
 
         try:
-            if click.confirm("Do you want us to run the sync loop for you?", default=True):
-                osh_proc = subprocess.Popen(["wandb-osh", "--command-dir", osh_command_dir])
-                print(f"Running wandb-osh in background... PID: {osh_proc.pid}")
-                print(cyan(f"To kill the process, run 'kill {osh_proc.pid}' in the terminal."))
+            osh_proc = None
+            # if click.confirm("Do you want us to run the sync loop for you?", default=True):
+            osh_proc = subprocess.Popen(["wandb-osh", "--command-dir", osh_command_dir])
+            print(f"Running wandb-osh in background... PID: {osh_proc.pid}")
+            # print(cyan(f"To kill the sync process, run 'kill {osh_proc.pid}' in the terminal."))
 
-            print("Once the job gets allocated and starts running, output will be printed below: (Ctrl + C to exit)")
+            print(
+                "Once the job gets allocated and starts running, output will be printed below: (Ctrl + C to exit printing)"
+            )
             while not list(slurm_log_dir.glob("*.out")):
                 time.sleep(1)
             os.system(f"tail -f {slurm_log_dir}/*.out")
-            # tail_proc = subprocess.Popen(
-            #     ["tail", "-f", slurm_log_dir / "*.out"], stdout=subprocess.PIPE, stderr=subprocess.PIPE
-            # )
         except KeyboardInterrupt:
+            osh_proc.kill()
+            print("Sync loop and print loop killed.")
             print(f"You can manually start a sync loop & get wandb link later by running the following:")
             print(cyan(f"wandb-osh --command-dir {osh_command_dir}"))
 
