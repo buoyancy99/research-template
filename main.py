@@ -6,6 +6,8 @@ Borrowed part of the code from David Charatan and wandb.
 import os
 import sys
 import subprocess
+import select
+import time
 import click
 from datetime import timedelta
 from pathlib import Path
@@ -128,8 +130,13 @@ def run_slurm(cfg: DictConfig):
         tail_proc = subprocess.Popen(
             ["tail", "-f", slurm_log_dir / "*.out"], stdout=subprocess.PIPE, stderr=subprocess.PIPE
         )
+        p = select.poll()
+        p.register(tail_proc.stdout)
+
         while True:
-            print(tail_proc.stdout.readline())
+            if p.poll(1):
+                print(tail_proc.stdout.readline())
+            time.sleep(1)
 
 
 @hydra.main(
