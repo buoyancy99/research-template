@@ -1,8 +1,71 @@
 from pathlib import Path
-from typing import Optional
-
+from typing import TYPE_CHECKING, Any, Dict, List, Literal, Mapping, Optional, Union
+from types import MethodType
+from typing_extensions import override
+from functools import wraps
 import torch
+import os
 import wandb
+import time
+from lightning.pytorch.loggers.wandb import WandbLogger
+from lightning.pytorch.utilities.rank_zero import rank_zero_only
+from wandb_osh.hooks import TriggerWandbSyncHook
+
+
+class OfflineWandbLogger(WandbLogger):
+    """
+    Wraps WandbLogger to trigger offline sync hook occasionally.
+    This is useful when running on slurm clusters, many of which
+    only has internet on login nodes, not compute nodes.
+    """
+
+    def __init__(
+        self,
+        name=None,
+        save_dir=".",
+        version=None,
+        offline=False,
+        dir=None,
+        id=None,
+        anonymous=None,
+        project=None,
+        log_model=False,
+        experiment=None,
+        prefix="",
+        checkpoint_name=None,
+        **kwargs: Any,
+    ) -> None:
+        super().__init__(
+            name=name,
+            save_dir=save_dir,
+            version=version,
+            offline=False,
+            dir=dir,
+            id=id,
+            anonymous=anonymous,
+            project=project,
+            log_model=log_model,
+            experiment=experiment,
+            prefix=prefix,
+            checkpoint_name=checkpoint_name,
+            **kwargs,
+        )
+        self._offline = offline
+        communication_dir = Path(".wandb_osh_command_dir")
+        communication_dir.mkdir(parents=True, exist_ok=True)
+        self.trigger_sync = TriggerWandbSyncHook(communication_dir)
+        self.last_sync_time = 0.0
+        self.min_sync_interval = 60
+        self.wandb_dir = os.path.join(self._save_dir, "wandb/latest-run")
+
+    @override
+    @rank_zero_only
+    def log_metrics(self, metrics: Mapping[str, float], step: Optional[int] = None) -> None:
+        out = super().log_metrics(metrics, step)
+        if time.time() - self.last_sync_time > self.min_sync_interval:
+            self.trigger_sync(self.wandb_dir)
+            self.last_sync_time = time.time()
+        return out
 
 
 def version_to_int(artifact) -> int:
@@ -10,9 +73,9 @@ def version_to_int(artifact) -> int:
     return int(artifact.version[1:])
 
 
-def download_latest_checkpoint(run_id: str, download_dir: Path) -> Path:
+def download_latest_checkpoint(run_path: str, download_dir: Path) -> Path:
     api = wandb.Api()
-    run = api.run(run_id)
+    run = api.run(run_path)
 
     # Find the latest saved model checkpoint.
     latest = None
@@ -25,7 +88,7 @@ def download_latest_checkpoint(run_id: str, download_dir: Path) -> Path:
 
     # Download the checkpoint.
     download_dir.mkdir(exist_ok=True, parents=True)
-    root = download_dir / run_id
+    root = download_dir / run_path
     latest.download(root=root)
     return root / "model.ckpt"
 

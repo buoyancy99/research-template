@@ -14,6 +14,8 @@ from lightning.pytorch.callbacks import LearningRateMonitor, ModelCheckpoint
 
 from omegaconf import DictConfig
 
+from utils.print_utils import cyan
+
 
 class BaseExperiment(ABC):
     """
@@ -70,7 +72,8 @@ class BaseExperiment(ABC):
         """
 
         if hasattr(self, task) and callable(getattr(self, task)):
-            print(f"== Executing task: {task} =====================")
+            message = cyan(f"Executing task: {task}")
+            print(f"{message} out of {self.cfg.experiment.tasks}")
             getattr(self, task)()
         else:
             raise ValueError(

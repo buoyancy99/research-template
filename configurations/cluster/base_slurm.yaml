@@ -1,0 +1,7 @@
+is_compute_node_offline: True  # many slurm systems only allows internet on login node, not compute node
+
+num_gpus: 1
+num_cpus: 32
+memory: 32G
+time: "24:0:0" # Acceptable time formats include "minutes", "minutes:seconds", "hours:minutes:seconds", "days-hours", "days-hours:minutes" and "days-hours:minutes:seconds".
+email: null

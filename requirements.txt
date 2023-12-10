@@ -13,3 +13,4 @@ click
 moviepy
 imageio
 einops
+wandb-osh

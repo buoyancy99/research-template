@@ -1,8 +1,9 @@
 # Instructions
 
-All experiments can be launched via `python main.py [options]` where sample options for each project is provided below.
-For clusters like supercloud and satori, you can run `python scripts/submit_job.py` on login node and input options in
-my ui interface. It will automatically generate slurm scripts and run them for you on a compute node.
+All experiments can be launched via `python -m main [options]` where sample options for each project is provided below.
+
+For slurm clusters like supercloud, you can run `python -m main cluster=mit_supercloud [options]` on login node. It will automatically generate slurm scripts and run them for you on a compute node. Even though compute nodes are offline, 
+the script will still automatically sync wandb logging to cloud with <1min latency. 
 
 ## Setup
 
@@ -15,13 +16,13 @@ If using VScode, please modify `.vscode/settings.json` so python interpreter is 
 ## Run built-in example
 
 Run an example machine-learning experiment with a specified dataset and algorithm:
-`python main.py +name=xxxx wandb.mode=online experiment=example_classification dataset=example_cifar10 algorithm=example_classifier`
+`python -m main +name=xxxx wandb.mode=online experiment=example_classification dataset=example_cifar10 algorithm=example_classifier`
 
 Run a generic example experiment (not necessarily ML):
-`python main.py +name=yyyy wandb.mode=online experiment=hello_world algorithm=hello_algo1`
+`python -m main +name=yyyy wandb.mode=online experiment=hello_world algorithm=hello_algo1`
 
 Run a generic example experiment, with different algorithm:
-`python main.py +name=zzzz wandb.mode=online experiment=hello_world algorithm=hello_algo2`
+`python -m main +name=zzzz wandb.mode=online experiment=hello_world algorithm=hello_algo2`
 
 ## Pass in arguments
 
@@ -70,6 +71,11 @@ We provide a useful debug flag which you can enable by `python main.py debug=Tru
 
 Launch hyperparameter sweep via: `wandb sweep configurations/sweep/example_sweep.yaml`
 Then, launch sweep agents on different servers by running the command printed by the controller (e.g., `wandb agent <agent_id>`).
+
+
+## Add slurm clusters
+It's very easy to add your own slurm clusters via adding a yaml file in `configurations/cluster`. You can take a look 
+at `mit_supercloud.yaml` for example. 
 
 
 ## Feature Roadmap

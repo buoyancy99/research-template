@@ -3,6 +3,7 @@ defaults:
   - experiment: example_classification # experiment yaml file name in configurations/experiments folder [fixme]
   - dataset: example_cifar10 # dataset yaml file name in configurations/dataset folder [fixme]
   - algorithm: example_classifier # algorithm yaml file name in configurations/algorithm folder [fixme]
+  - cluster: null # optional, cluster yaml file name in configurations/cluster folder. Leave null for local compute
 
 debug: false # global debug flag will be passed into configuration of experiment, dataset and algorithm
 
