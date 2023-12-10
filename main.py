@@ -5,6 +5,7 @@ Borrowed part of the code from David Charatan and wandb.
 
 import os
 import sys
+import subprocess
 import click
 from datetime import timedelta
 from pathlib import Path
@@ -18,6 +19,7 @@ from omegaconf.omegaconf import open_dict
 from lightning.pytorch.loggers.wandb import WandbLogger
 from wandb_osh.syncer import WandbSyncer
 
+from utils.print_utils import cyan
 from utils.wandb_utils import download_latest_checkpoint, OfflineWandbLogger
 from utils.cluster_utils import submit_slurm_job
 from experiments import build_experiment
@@ -105,23 +107,29 @@ def run_slurm(cfg: DictConfig):
         if project_root == Path("/"):
             raise Exception("Could not find repo directory!")
 
-    submit_slurm_job(
+    slurm_log_dir = submit_slurm_job(
         cfg,
         python_args,
         project_root,
     )
 
     if "cluster" in cfg and cfg.cluster.is_compute_node_offline and cfg.wandb.mode == "online":
-        print(
-            "Job submitted to a compute node without internet. To sync the run in real time, it's recommended to run 'wandb-osh' or 'wandb-osh -- --sync-all'."
-        )
-
+        print("Job submitted to a compute node without internet. This requires manual syncing on login node.")
+        osh_command_dir = project_root / ".wandb_osh_command_dir"
         if click.confirm("Do you want us to run the sync loop for you?", default=True):
-            print("Running wandb-osh... (press Ctrl+C to stop)")
-            wandb_osh = WandbSyncer(command_dir=".wandb_osh_command_dir")
-            wandb_osh.loop()
+            osh_proc = subprocess.Popen(["wandb-osh", "--command-dir", osh_command_dir])
+            print(f"Running wandb-osh in background... PID: {osh_proc.pid}")
+            print(f"To kill the background sync process, run 'kill {osh_proc.pid}'.")
         else:
-            print("To sync the run in real-time, run 'wandb-osh' or 'wandb-osh -- --sync-all'.")
+            print(f"You can manually start a sync loop & get wandb link later by running the following:")
+            print(cyan(f"wandb-osh --command-dir {osh_command_dir}"))
+        print("Job is submitted to slurm, you can check the status with 'squeue -u $USER'.")
+        print("Once the job starts, job output will be print below: (Ctrl + C to exit)")
+        tail_proc = subprocess.Popen(
+            ["tail", "-f", slurm_log_dir / "*.out"], stdout=subprocess.PIPE, stderr=subprocess.PIPE
+        )
+        while True:
+            print(tail_proc.stdout.readline())
 
 
 @hydra.main(
@@ -154,6 +162,7 @@ def run(cfg: DictConfig):
         download_latest_checkpoint(run_path, Path("outputs/loaded_checkpoints"))
 
     if "cluster" in cfg and not "_on_compute_node" in cfg:
+        print(cyan("Slurm detected, submitting to compute node instead of running locally..."))
         run_slurm(cfg)
     else:
         run_local(cfg)

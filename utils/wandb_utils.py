@@ -4,6 +4,7 @@ from types import MethodType
 from typing_extensions import override
 from functools import wraps
 import torch
+import os
 import wandb
 import time
 from lightning.pytorch.loggers.wandb import WandbLogger
@@ -37,8 +38,9 @@ class OfflineWandbLogger(WandbLogger):
         communication_dir = Path(".wandb_osh_command_dir")
         communication_dir.mkdir(parents=True, exist_ok=True)
         self.trigger_sync = TriggerWandbSyncHook(communication_dir)
-        self.last_sync_time = time.time()
+        self.last_sync_time = 0.0
         self.min_sync_interval = 60
+        self.wandb_dir = os.path.join(self._save_dir, "wandb/latest-run")
 
         super().__init__(
             name=name,
@@ -62,7 +64,7 @@ class OfflineWandbLogger(WandbLogger):
     def log_metrics(self, metrics: Mapping[str, float], step: Optional[int] = None) -> None:
         out = super().log_metrics(metrics, step)
         if time.time() - self.last_sync_time > self.min_sync_interval:
-            self.trigger_sync(self._save_dir)
+            self.trigger_sync(self.wandb_dir)
             self.last_sync_time = time.time()
         return out
 
