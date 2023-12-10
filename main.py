@@ -128,18 +128,10 @@ def run_slurm(cfg: DictConfig):
             print("Once the job gets allocated and starts running, output will be printed below: (Ctrl + C to exit)")
             while not list(slurm_log_dir.glob("*.out")):
                 time.sleep(1)
-            tail_proc = subprocess.Popen(
-                ["tail", "-f", slurm_log_dir / "*.out"], stdout=subprocess.PIPE, stderr=subprocess.PIPE
-            )
-            # p = select.poll()
-            # p.register(tail_proc.stdout)
-
-            # while True:
-            #     if p.poll(1):
-            #         out = tail_proc.stdout.readline().strip().decode("utf-8")
-            #         if out:
-            #             print(out)
-            #     time.sleep(1)
+            os.system(f"tail -f {slurm_log_dir}/*.out")
+            # tail_proc = subprocess.Popen(
+            #     ["tail", "-f", slurm_log_dir / "*.out"], stdout=subprocess.PIPE, stderr=subprocess.PIPE
+            # )
         except KeyboardInterrupt:
             print(f"You can manually start a sync loop & get wandb link later by running the following:")
             print(cyan(f"wandb-osh --command-dir {osh_command_dir}"))
