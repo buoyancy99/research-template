@@ -35,13 +35,6 @@ class OfflineWandbLogger(WandbLogger):
         checkpoint_name=None,
         **kwargs: Any,
     ) -> None:
-        communication_dir = Path(".wandb_osh_command_dir")
-        communication_dir.mkdir(parents=True, exist_ok=True)
-        self.trigger_sync = TriggerWandbSyncHook(communication_dir)
-        self.last_sync_time = 0.0
-        self.min_sync_interval = 60
-        self.wandb_dir = os.path.join(self._save_dir, "wandb/latest-run")
-
         super().__init__(
             name=name,
             save_dir=save_dir,
@@ -58,6 +51,12 @@ class OfflineWandbLogger(WandbLogger):
             **kwargs,
         )
         self._offline = offline
+        communication_dir = Path(".wandb_osh_command_dir")
+        communication_dir.mkdir(parents=True, exist_ok=True)
+        self.trigger_sync = TriggerWandbSyncHook(communication_dir)
+        self.last_sync_time = 0.0
+        self.min_sync_interval = 60
+        self.wandb_dir = os.path.join(self._save_dir, "wandb/latest-run")
 
     @override
     @rank_zero_only
