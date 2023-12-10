@@ -127,6 +127,8 @@ def run_slurm(cfg: DictConfig):
             print(
                 cyan("Once the job gets allocated and starts running, output will be printed below: (Ctrl + C to exit)")
             )
+            while not slurm_log_dir.glob("*.out"):
+                time.sleep(1)
             tail_proc = subprocess.Popen(
                 ["tail", "-f", slurm_log_dir / "*.out"], stdout=subprocess.PIPE, stderr=subprocess.PIPE
             )
