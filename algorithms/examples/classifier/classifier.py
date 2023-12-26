@@ -55,13 +55,13 @@ class Classifier(BasePytorchAlgo):
         inputs, targets = batch
         loss, accuraccy = self.forward(inputs, targets)
 
-        if (batch_idx + 1) % 10 == 0:
+        if (batch_idx + 1) % 100 == 0:
             self.log_dict({"training/loss": loss, "training/accuracy": accuraccy})
 
-        if (batch_idx + 1) % 100 == 0:
+        if (batch_idx + 1) % 1000 == 0:
             self.log_image("training/image", inputs, mean=self.data_mean, std=self.data_std)
 
-        if (batch_idx + 1) % 200 == 0:
+        if (batch_idx + 1) % 2000 == 0:
             self.log_video("training/video", inputs, mean=self.data_mean, std=self.data_std)
 
         return loss

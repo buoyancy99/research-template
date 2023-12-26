@@ -8,6 +8,7 @@ tasks: [train] # tasks to run sequantially, change when your project has multipl
 
 training:
   precision: 16-mixed # set float precision, 16-mixed is faster while 32 is more stable
+  lr: 0.001 # learning rate
   batch_size: 16 # training batch size; effective batch size is this number * gpu * nodes iff using distributed training
   max_epochs: 1000 # set to -1 to train forever
   max_steps: -1 # set to -1 to train forever, will override max_epochs
@@ -17,6 +18,7 @@ training:
     shuffle: True # whether training data will be shuffled
   optim:
     accumulate_grad_batches: 1 # accumulate gradients for n batches before backprop
+    gradient_clip_val: 0 # clip gradients with norm above this value, set to 0 to disable
   checkpointing:
     every_n_train_steps: 5000 # save a checkpoint every n train steps
 
