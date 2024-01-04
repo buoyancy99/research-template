@@ -167,12 +167,12 @@ class BaseLightningExperiment(BaseExperiment):
             check_val_every_n_epoch=self.cfg.experiment.validation.val_every_n_epoch,
             accumulate_grad_batches=self.cfg.experiment.training.optim.accumulate_grad_batches,
             precision=self.cfg.experiment.training.precision,
-            detect_anomaly=self.cfg.experiment.debug,
+            detect_anomaly=False, #self.cfg.experiment.debug,
             num_sanity_val_steps=int(self.cfg.experiment.debug),
         )
 
-        if self.debug:
-            self.logger.watch(self.algo, log="all")
+        # if self.debug:
+        #     self.logger.watch(self.algo, log="all")
 
         trainer.fit(
             self.algo,
