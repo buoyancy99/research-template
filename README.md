@@ -38,6 +38,10 @@ For example, arguments `algorithm=example_classifier algorithm.lr=1e-3` will ove
 
 All static config and runtime override will be logged to cloud automatically.
 
+
+## Resume a checkpoint & logging
+For machine learning experiments, all checkpoints and logs are logged to cloud automatically so you can resume them on another server. Simply append `resume=[wandb_run_id]` to your command line arguments to resume it. The run_id can be founded in a url of a wandb run in wandb dashboard.
+
 ## Modify for your own project
 
 First, create a new repository with this template. Make sure the new repository has the name you want to use for wandb
