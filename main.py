@@ -57,7 +57,7 @@ def run_local(cfg: DictConfig):
     # Set up logging with wandb.
     if cfg.wandb.mode != "disabled":
         # If resuming, merge into the existing run on wandb.
-        resume_id = cfg.wandb.get("resume", None)
+        resume_id = cfg.get("resume", None)
         name = f"{cfg.name} ({output_dir.parent.name}/{output_dir.name})" if resume_id is None else None
 
         if "_on_compute_node" in cfg and cfg.cluster.is_compute_node_offline:
