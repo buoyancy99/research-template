@@ -44,9 +44,12 @@ def run_local(cfg: DictConfig):
     cfg_choice = OmegaConf.to_container(hydra_cfg.runtime.choices)
 
     with open_dict(cfg):
-        cfg.experiment._name = cfg_choice["experiment"]
-        cfg.dataset._name = cfg_choice["dataset"]
-        cfg.algorithm._name = cfg_choice["algorithm"]
+        if cfg_choice["experiment"] is not None:
+            cfg.experiment._name = cfg_choice["experiment"]
+        if cfg_choice["dataset"] is not None:
+            cfg.dataset._name = cfg_choice["dataset"]
+        if cfg_choice["algorithm"] is not None:
+            cfg.algorithm._name = cfg_choice["algorithm"]
 
     # Set up the output directory.
     output_dir = Path(hydra_cfg.runtime.output_dir)
