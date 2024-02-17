@@ -1,6 +1,8 @@
 # Instructions
 
-All experiments can be launched via `python -m main [options]` where sample options for each project is provided below.
+All experiments can be launched via `python -m main [options]` where you can fine more details later in this article.
+
+The code base will automatically use cuda or your Macbook M1 GPU when available.
 
 For slurm clusters e.g. mit supercloud, you can run `python -m main cluster=mit_supercloud [options]` on login node. 
 It will automatically generate slurm scripts and run them for you on a compute node. Even if compute nodes are offline, 
@@ -14,7 +16,8 @@ Run `conda activate [your_env_name]` to activate this environment.
 Run `pip install -r requirements.txt` to install all dependencies.
 
 [Sign up](https://wandb.ai/site) a wandb account for cloud logging and checkpointing. In command line, run `wandb login` to login.
-Please modify the wandb entity (account) in `configurations/config.yaml`.
+
+Then modify the wandb entity (account) in `configurations/config.yaml`.
 
 If using VScode, please modify `.vscode/settings.json` so python interpreter is set correctly.
 

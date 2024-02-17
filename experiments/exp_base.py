@@ -73,8 +73,7 @@ class BaseExperiment(ABC):
         """
 
         if hasattr(self, task) and callable(getattr(self, task)):
-            message = cyan(f"Executing task: {task}")
-            print(f"{message} out of {self.cfg.tasks}")
+            print(cyan("Executing task:"), f"{task} out of {self.cfg.tasks}")
             getattr(self, task)()
         else:
             raise ValueError(
@@ -107,6 +106,7 @@ class BaseLightningExperiment(BaseExperiment):
                 batch_size=self.cfg.training.batch_size,
                 num_workers=min(os.cpu_count(), self.cfg.training.data.num_workers),
                 shuffle=self.cfg.training.data.shuffle,
+                persistent_workers=True,
             )
         else:
             return None
@@ -119,6 +119,7 @@ class BaseLightningExperiment(BaseExperiment):
                 batch_size=self.cfg.validation.batch_size,
                 num_workers=min(os.cpu_count(), self.cfg.validation.data.num_workers),
                 shuffle=self.cfg.validation.data.shuffle,
+                persistent_workers=True,
             )
         else:
             return None
@@ -131,6 +132,7 @@ class BaseLightningExperiment(BaseExperiment):
                 batch_size=self.cfg.test.batch_size,
                 num_workers=min(os.cpu_count(), self.cfg.test.data.num_workers),
                 shuffle=self.cfg.test.data.shuffle,
+                persistent_workers=True,
             )
         else:
             return None
