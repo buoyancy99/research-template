@@ -2,6 +2,7 @@ defaults:
   - base_slurm
 
 is_compute_node_offline: True  # many slurm systems only allows internet on login node, not compute node
+
 launch_template: |
   #!/bin/bash
 

@@ -1,11 +1,6 @@
 defaults:
   - base_slurm
 
-is_compute_node_offline: False
-
-params:
-  env_name: template  # change this to the name of your conda environment
-
 launch_template: |
   #!/bin/bash
 

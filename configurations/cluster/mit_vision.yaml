@@ -1,10 +1,7 @@
 defaults:
   - base_slurm
 
-is_compute_node_offline: False
-
 params:
-  env_name: template  # change this to the name of your conda environment
   partition: vision-sitzmann
   qos: vision-sitzmann-main
 
