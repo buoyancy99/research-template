@@ -22,16 +22,14 @@ from lightning.pytorch.loggers.wandb import WandbLogger
 from wandb_osh.syncer import WandbSyncer
 
 from utils.print_utils import cyan
-from utils.wandb_utils import download_latest_checkpoint, OfflineWandbLogger
+from utils.wandb_utils import download_latest_checkpoint, is_run_id, OfflineWandbLogger
 from utils.cluster_utils import submit_slurm_job
 from experiments import build_experiment
 
 
-def process_checkpointing_cfg(cfg: DictConfig) -> Dict[str, Any]:
-    params = {**cfg}
-    if "train_time_interval" in params:
-        params["train_time_interval"] = timedelta(**params["train_time_interval"])
-    return params  # type: ignore
+# Set matmul precision (for newer GPUs, e.g., A6000).
+if hasattr(torch, "set_float32_matmul_precision"):
+    torch.set_float32_matmul_precision("high")
 
 
 def run_local(cfg: DictConfig):
@@ -53,15 +51,15 @@ def run_local(cfg: DictConfig):
 
     # Set up the output directory.
     output_dir = Path(hydra_cfg.runtime.output_dir)
-    print(f"Saving outputs to {output_dir}")
+    print(cyan(f"Outputs will be saved to:"), output_dir)
     (output_dir.parents[1] / "latest-run").unlink(missing_ok=True)
     (output_dir.parents[1] / "latest-run").symlink_to(output_dir, target_is_directory=True)
 
     # Set up logging with wandb.
     if cfg.wandb.mode != "disabled":
         # If resuming, merge into the existing run on wandb.
-        resume_id = cfg.get("resume", None)
-        name = f"{cfg.name} ({output_dir.parent.name}/{output_dir.name})" if resume_id is None else None
+        resume = cfg.get("resume", None)
+        name = f"{cfg.name} ({output_dir.parent.name}/{output_dir.name})" if resume is None else None
 
         if "_on_compute_node" in cfg and cfg.cluster.is_compute_node_offline:
             logger_cls = OfflineWandbLogger
@@ -75,28 +73,31 @@ def run_local(cfg: DictConfig):
             project=cfg.wandb.project,
             log_model="all",
             config=OmegaConf.to_container(cfg),
-            id=None if cfg.wandb.get("use_new_id", False) else resume_id,
+            id=resume,
         )
-
-        # On rank != 0, wandb.run is None.
-        if wandb.run is not None:
-            print(f"wandb mode: {wandb.run.settings.mode}")
-            wandb.run.log_code(".")
     else:
         logger = None
 
-    # Resuming a run,
-    resume_id = cfg.wandb.get("resume", None)
-    if resume_id is not None:
-        run_path = f"{cfg.wandb.entity}/{cfg.wandb.project}/{resume_id}"
-        checkpoint_path = Path("outputs/loaded_checkpoints") / run_path / "model.ckpt"
-        print(f"Will load checkpoint from {checkpoint_path}")
+    # Load ckpt
+    resume = cfg.get("resume", None)
+    load = cfg.get("load", None)
+    checkpoint_path = None
+    load_id = None
+    if load and not is_run_id(load):
+        checkpoint_path = load
+    if resume:
+        load_id = resume
+    elif load and is_run_id(load):
+        load_id = load
     else:
-        checkpoint_path = None
+        load_id = None
 
-    # Set matmul precision (for newer GPUs, e.g., A6000).
-    if hasattr(torch, "set_float32_matmul_precision"):
-        torch.set_float32_matmul_precision("high")
+    if load_id:
+        run_path = f"{cfg.wandb.entity}/{cfg.wandb.project}/{load_id}"
+        checkpoint_path = Path("outputs/downloaded") / run_path / "model.ckpt"
+
+    if checkpoint_path:
+        print(f"Will load checkpoint from {checkpoint_path}")
 
     # launch experiment
     experiment = build_experiment(cfg, logger, checkpoint_path)
@@ -127,8 +128,10 @@ def run_slurm(cfg: DictConfig):
         osh_proc = subprocess.Popen(["wandb-osh", "--command-dir", osh_command_dir])
         print(f"Running wandb-osh in background... PID: {osh_proc.pid}")
         print(f"To kill the sync process, run 'kill {osh_proc.pid}' in the terminal.")
-        print(f"You can manually start a sync loop later by running the following:")
-        print(cyan(f"wandb-osh --command-dir {osh_command_dir}"))
+        print(
+            f"You can manually start a sync loop later by running the following:",
+            cyan(f"wandb-osh --command-dir {osh_command_dir}"),
+        )
 
         print(
             "Once the job gets allocated and starts running, output will be printed below: (Ctrl + C to exit printing)"
@@ -161,11 +164,26 @@ def run(cfg: DictConfig):
     if cfg.wandb.project is None:
         cfg.wandb.project = str(Path(__file__).parent.name)
 
-    # If resuming a run and not on a compute node, download the checkpoint.
-    resume_id = cfg.wandb.get("resume", None)
-    if resume_id and "_on_compute_node" not in cfg:
-        run_path = f"{cfg.wandb.entity}/{cfg.wandb.project}/{resume_id}"
-        download_latest_checkpoint(run_path, Path("outputs/loaded_checkpoints"))
+    # If resuming or loading a wandb ckpt and not on a compute node, download the checkpoint.
+    resume = cfg.get("resume", None)
+    load = cfg.get("load", None)
+
+    if resume and load:
+        raise ValueError(
+            "When resuming a wandb run with `resume=[wandb id]`, checkpoint will be loaded from the cloud"
+            "and `load` should not be specified."
+        )
+
+    if resume:
+        load_id = resume
+    elif load and is_run_id(load):
+        load_id = load
+    else:
+        load_id = None
+
+    if load_id and "_on_compute_node" not in cfg:
+        run_path = f"{cfg.wandb.entity}/{cfg.wandb.project}/{load_id}"
+        download_latest_checkpoint(run_path, Path("outputs/downloaded"))
 
     if "cluster" in cfg and not "_on_compute_node" in cfg:
         print(cyan("Slurm detected, submitting to compute node instead of running locally..."))

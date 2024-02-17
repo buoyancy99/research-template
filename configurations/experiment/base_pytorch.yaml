@@ -20,7 +20,11 @@ training:
     accumulate_grad_batches: 1 # accumulate gradients for n batches before backprop
     gradient_clip_val: 0 # clip gradients with norm above this value, set to 0 to disable
   checkpointing:
+    # these are arguments to pytorch lightning's callback, `ModelCheckpoint` class
     every_n_train_steps: 5000 # save a checkpoint every n train steps
+    every_n_epochs: null # mutually exclusive with ``every_n_train_steps`` and ``train_time_interval``
+    train_time_interval: null # in format of "00:12:00:00", mutually exclusive with ``every_n_train_steps`` and ``every_n_epochs``.
+    enable_version_counter: False # If this is ``False``, later checkpoint will be overwrite previous ones.
 
 validation:
   precision: 16-mixed

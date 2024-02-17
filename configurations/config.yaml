@@ -12,5 +12,5 @@ wandb:
   project: null # wandb project name; if not provided, defaults to root folder name [fixme]
   mode: online # set wandb logging to online, offline or dryrun
 
-resume: null # wandb run id if resume training from logged checkpoints [fixme]
-
+resume: null # wandb run id to resume logging and loading checkpoint from
+load: null # wanmdb run id containing checkpoint or a path to a checkpoint file 

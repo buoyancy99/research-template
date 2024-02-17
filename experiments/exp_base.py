@@ -28,7 +28,7 @@ class BaseExperiment(ABC):
 
     def __init__(
         self,
-        cfg: DictConfig,
+        root_cfg: DictConfig,
         logger: Optional[WandbLogger] = None,
         ckpt_path: Optional[Union[str, pathlib.Path]] = None,
     ) -> None:
@@ -41,9 +41,9 @@ class BaseExperiment(ABC):
             ckpt_path: an optional path to saved checkpoint
         """
         super().__init__()
-        self.root_cfg = cfg
-        self.cfg = cfg.experiment
-        self.debug = cfg.debug
+        self.root_cfg = root_cfg
+        self.cfg = root_cfg.experiment
+        self.debug = root_cfg.debug
         self.logger = logger
         self.ckpt_path = ckpt_path
         self.algo = None

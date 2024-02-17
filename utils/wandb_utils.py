@@ -1,6 +1,5 @@
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Dict, List, Literal, Mapping, Optional, Union
-from types import MethodType
 from typing_extensions import override
 from functools import wraps
 import torch
@@ -124,3 +123,8 @@ def rewrite_checkpoint_for_compatibility(path: Optional[Path]) -> Optional[Path]
     new_path = path.parent / f"{path.name}.rewrite"
     torch.save(checkpoint, new_path)
     return new_path
+
+
+def is_run_id(run_id: str) -> bool:
+    """Check if a string is a run ID."""
+    return len(run_id) == 8 and run_id.isalnum()
