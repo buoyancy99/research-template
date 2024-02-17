@@ -1,7 +1,9 @@
 defaults:
   - base_pytorch
 
-tasks: [training, test] # tasks to run sequantially, change when your project has multiple stages and you want to run only a subset of them.
+# tasks to run sequantially, change when your project has multiple stages and you want to run only a subset of them.
+# runs the training & test method of ClassificationExperiment in `experiments/example_classification.py`
+tasks: [training, test] 
 
 # override corresponding fields in base_pytorch
 training:

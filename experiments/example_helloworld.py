@@ -25,7 +25,7 @@ class HelloWorldExperiment(BaseExperiment):
     def main(self):
         """
         By default an experiment runs a `main` task, which calls this `main` method. If your experiment has multiple
-        tasks, for example, a `train` stage and a `test` stage, you can define a method for each under the
+        tasks, for example, a `training` stage and a `test` stage, you can define a method for each under the
         task name. They will be called automatically when the names appear in the yaml file for experiment. For example,
         `configurations/experiments/base_experiment.yaml` has its `tasks` field containing only a `main` task,
         which we defines here. So at run time it will only run this `main` method. On the other hand, if you take a look
