@@ -2,7 +2,6 @@
 utils for submitting to clusters, such as slurm
 """
 
-
 import os
 from omegaconf import DictConfig, OmegaConf
 from datetime import datetime
@@ -24,17 +23,10 @@ def submit_slurm_job(
     (project_root / "slurm_logs" / "latest").unlink(missing_ok=True)
     (project_root / "slurm_logs" / "latest").symlink_to(log_dir, target_is_directory=True)
 
-    slurm_script = cfg.cluster.launch_template.format(
-        name=cfg.name,
-        log_dir=log_dir,
-        email=cfg.cluster.email,
-        num_gpus=cfg.cluster.num_gpus,
-        num_cpus=cfg.cluster.num_cpus,
-        memory=cfg.cluster.memory,
-        time=cfg.cluster.time,
-        project_root=project_root,
-        python_args=python_args,
-    )
+    params = dict(name=cfg.name, log_dir=log_dir, project_root=project_root, python_args=python_args)
+    params.update(cfg.cluster.params)
+
+    slurm_script = cfg.cluster.launch_template.format(**params)
 
     slurm_script_path = log_dir / "job.slurm"
     with slurm_script_path.open("w") as f:
