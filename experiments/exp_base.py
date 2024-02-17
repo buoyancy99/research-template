@@ -135,7 +135,7 @@ class BaseLightningExperiment(BaseExperiment):
         else:
             return None
 
-    def train(self) -> None:
+    def training(self) -> None:
         """
         All training happens here
         """
@@ -154,9 +154,6 @@ class BaseLightningExperiment(BaseExperiment):
             )
 
         trainer = pl.Trainer(
-            max_epochs=self.cfg.training.max_epochs,
-            max_steps=self.cfg.training.max_steps,
-            max_time=self.cfg.training.max_time,
             accelerator="auto",
             logger=self.logger,
             devices="auto",
@@ -182,6 +179,35 @@ class BaseLightningExperiment(BaseExperiment):
             ckpt_path=self.ckpt_path,
         )
 
+    def validation(self) -> None:
+        """
+        All validation happens here
+        """
+        if not self.algo:
+            self.algo = self._build_algo()
+
+        callbacks = []
+
+        trainer = pl.Trainer(
+            accelerator="auto",
+            logger=self.logger,
+            devices="auto",
+            strategy=DDPStrategy(find_unused_parameters=False) if torch.cuda.device_count() > 1 else "auto",
+            callbacks=callbacks,
+            limit_val_batches=self.cfg.validation.limit_batch,
+            precision=self.cfg.validation.precision,
+            detect_anomaly=False,  # self.cfg.debug,
+        )
+
+        # if self.debug:
+        #     self.logger.watch(self.algo, log="all")
+
+        trainer.validate(
+            self.algo,
+            dataloaders=self._build_validation_loader(),
+            ckpt_path=self.ckpt_path,
+        )
+
     def test(self) -> None:
         """
         All testing happens here
@@ -190,13 +216,8 @@ class BaseLightningExperiment(BaseExperiment):
             self.algo = self._build_algo()
 
         callbacks = []
-        if self.logger:
-            callbacks.append(LearningRateMonitor("step", True))
 
         trainer = pl.Trainer(
-            max_epochs=self.cfg.test.max_epochs,
-            max_steps=self.cfg.test.max_steps,
-            max_time=self.cfg.test.max_time,
             accelerator="auto",
             logger=self.logger,
             devices="auto",
@@ -204,7 +225,7 @@ class BaseLightningExperiment(BaseExperiment):
             callbacks=callbacks,
             limit_test_batches=self.cfg.test.limit_batch,
             precision=self.cfg.test.precision,
-            detect_anomaly=self.cfg.debug,
+            detect_anomaly=False,  # self.cfg.debug,
         )
 
         # Only load the checkpoint if only testing. Otherwise, it will have been loaded

@@ -4,7 +4,7 @@
 defaults:
   - base_experiment
 
-tasks: [train] # tasks to run sequantially, change when your project has multiple stages and you want to run only a subset of them.
+tasks: [training] # tasks to run sequantially, change when your project has multiple stages and you want to run only a subset of them.
 
 training:
   precision: 16-mixed # set float precision, 16-mixed is faster while 32 is more stable
@@ -23,6 +23,7 @@ training:
     every_n_train_steps: 5000 # save a checkpoint every n train steps
 
 validation:
+  precision: 16-mixed
   batch_size: 16 # validation batch size per GPU; effective batch size is this number * gpu * nodes iff using distributed training
   val_every_n_step: 2000 # controls how frequent do we run validation, can be float (fraction of epoches) or int (steps) or null (if val_every_n_epoch is set)
   val_every_n_epoch: null # if you want to do validation every n epoches, requires val_every_n_step to be null.
@@ -34,9 +35,6 @@ validation:
 test:
   precision: 16-mixed
   batch_size: 16 # test batch size per GPU; effective batch size is this number * gpu * nodes iff using distributed training
-  max_epochs: 1000 # set to -1 to test forever
-  max_steps: -1 # set to -1 to test forever, will override max_epochs
-  max_time: null # set to something like "00:12:00:00" to enable
   limit_batch: null # if null, run through test set. Otherwise limit the number of batches to use for test.
   data:
     num_workers: 16 # number of CPU threads for data preprocessing, for test.

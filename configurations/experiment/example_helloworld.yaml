@@ -2,4 +2,5 @@
 defaults:
   - base_experiment
 
+tasks: [main]
 message: "Hello World!"

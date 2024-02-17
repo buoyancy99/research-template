@@ -1,7 +1,7 @@
 defaults:
   - base_pytorch
 
-tasks: [train, test] # tasks to run sequantially, change when your project has multiple stages and you want to run only a subset of them.
+tasks: [training, test] # tasks to run sequantially, change when your project has multiple stages and you want to run only a subset of them.
 
 # override corresponding fields in base_pytorch
 training:

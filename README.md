@@ -71,7 +71,7 @@ You are all set!
 `cd` into your project root. Now you can launch your new experiment with `python main.py +name=example_name`. For a debug run, simply set `wandb.mode=offline` to diable cloud logging. You can run baselines or
 different datasets by add arguments like `algorithm=[xxx]` or `dataset=[xxx]`. You can also override any `yaml` configurations by following the next section.
 
-One special note, if your want to define a new task for your experiment, (e.g. other than `train` and `test`) you can define it as a method in your experiment class (e.g. the `main` task in `experiments/example_helloworld.py`) and use `experiment.tasks=[task_name]` to run it. Let's say you have a `generate_dataset` task before the task `train` and you implemented it in experiment class, you can then run `python -m main +name xxxx experiment.tasks=[generate_dataset,train]` to execute it before training.
+One special note, if your want to define a new task for your experiment, (e.g. other than `training` and `test`) you can define it as a method in your experiment class (e.g. the `main` task in `experiments/example_helloworld.py`) and use `experiment.tasks=[task_name]` to run it. Let's say you have a `generate_dataset` task before the task `training` and you implemented it in experiment class, you can then run `python -m main +name xxxx experiment.tasks=[generate_dataset,training]` to execute it before training.
 
 ## Debug
 We provide a useful debug flag which you can enable by `python main.py debug=True`. This will enable numerical error tracking as well as setting `cfg.debug` to `True` for your experiments, algorithms and datasets class. However, this debug flag will make ML code very slow as it automatically tracks all parameter / gradients!
