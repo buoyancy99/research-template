@@ -1,5 +1,5 @@
 defaults:
-  - base_algorithm
+  - base_algo
 
 prefix: "["
 suffix: "]"

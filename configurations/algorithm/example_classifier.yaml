@@ -1,5 +1,5 @@
 defaults:
-  - base_algorithm # inherits from configurations/algorithm/base_algorithm.yaml
+  - base_pytorch_algo # inherits from configurations/algorithm/base_algo.yaml
 
 arch: resnet18
 num_class: 10
