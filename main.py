@@ -133,12 +133,12 @@ def run_slurm(cfg: DictConfig):
             cyan(f"wandb-osh --command-dir {osh_command_dir}"),
         )
 
-        print(
-            "Once the job gets allocated and starts running, output will be printed below: (Ctrl + C to exit printing)"
-        )
-        while not list(slurm_log_dir.glob("*.out")):
-            time.sleep(1)
-        os.system(f"tail -f {slurm_log_dir}/*.out")
+    print(
+        "Once the job gets allocated and starts running, output will be printed below: (Ctrl + C to exit printing)"
+    )
+    while not list(slurm_log_dir.glob("*.out")):
+        time.sleep(1)
+    os.system(f"tail -f {slurm_log_dir}/*.out")
 
 
 @hydra.main(
