@@ -143,6 +143,8 @@ class BaseLightningExperiment(BaseExperiment):
         """
         if not self.algo:
             self.algo = self._build_algo()
+        if self.cfg.training.compile:
+            self.algo = torch.compile(self.algo)
 
         callbacks = []
         if self.logger:
@@ -187,6 +189,8 @@ class BaseLightningExperiment(BaseExperiment):
         """
         if not self.algo:
             self.algo = self._build_algo()
+        if self.cfg.validation.compile:
+            self.algo = torch.compile(self.algo)
 
         callbacks = []
 
@@ -216,6 +220,8 @@ class BaseLightningExperiment(BaseExperiment):
         """
         if not self.algo:
             self.algo = self._build_algo()
+        if self.cfg.test.compile:
+            self.algo = torch.compile(self.algo)
 
         callbacks = []
 
