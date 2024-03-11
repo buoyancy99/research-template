@@ -1,4 +1,8 @@
-# Instructions
+# Project Instructions
+[Write your project specific instructions here]
+
+
+# Infra instructions
 
 All experiments can be launched via `python -m main [options]` where you can fine more details later in this article.
 
