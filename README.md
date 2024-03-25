@@ -3,6 +3,7 @@
 
 
 # Infra instructions
+This repo is forked from (Boyuan Chen)[https://boyuan.space/]'s template repo.
 
 All experiments can be launched via `python -m main [options]` where you can fine more details later in this article.
 
