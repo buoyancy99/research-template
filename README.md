@@ -5,19 +5,19 @@
 # Infra instructions
 This repo is forked from [Boyuan Chen](https://boyuan.space/)'s research template repo.
 
-All experiments can be launched via `python -m main [options]` where you can fine more details later in this article.
+All experiments can be launched via `python -m main {options}` where you can fine more details later in this article.
 
 The code base will automatically use cuda or your Macbook M1 GPU when available.
 
-For slurm clusters e.g. mit supercloud, you can run `python -m main cluster=mit_supercloud [options]` on login node. 
+For slurm clusters e.g. mit supercloud, you can run `python -m main cluster=mit_supercloud {options}` on login node. 
 It will automatically generate slurm scripts and run them for you on a compute node. Even if compute nodes are offline, 
 the script will still automatically sync wandb logging to cloud with <1min latency. It's also easy to add your own slurm
 by following the `Add slurm clusters` section.
 
 ## Setup
 
-Run `conda create python=3.10 -n [your_env_name]` to create environment.
-Run `conda activate [your_env_name]` to activate this environment.
+Run `conda create python=3.10 -n {your_env_name}` to create environment.
+Run `conda activate {your_env_name}` to activate this environment.
 Run `pip install -r requirements.txt` to install all dependencies.
 
 [Sign up](https://wandb.ai/site) a wandb account for cloud logging and checkpointing. In command line, run `wandb login` to login.
@@ -98,12 +98,12 @@ All static config and runtime override will be logged to cloud automatically.
 
 
 ## Resume a checkpoint & logging
-For machine learning experiments, all checkpoints and logs are logged to cloud automatically so you can resume them on another server. Simply append `resume=[wandb_run_id]` to your command line arguments to resume it. The run_id can be founded in a url of a wandb run in wandb dashboard.
+For machine learning experiments, all checkpoints and logs are logged to cloud automatically so you can resume them on another server. Simply append `resume={wandb_run_id}` to your command line arguments to resume it. The run_id can be founded in a url of a wandb run in wandb dashboard.
 
-On the other hand, sometimes you may want to start a new run with different run id but still load a prior ckpt. This can be done by setting the `load=[wandb_run_id / ckpt path]` flag.
+On the other hand, sometimes you may want to start a new run with different run id but still load a prior ckpt. This can be done by setting the `load={wandb_run_id / ckpt path}` flag.
 
 ## Load a checkpoint to eval
-The argument `experiment.tasks=[task_name1, task_name2]` (note the `[]` brackets here needed) allows to select a sequence of tasks to execute, such as `training`, `validation` and `test`. Therefore, for testing a machine learning ckpt, you may run `python -m main load=[your_wandb_run_id] experiment.tasks=[test]`.
+The argument `experiment.tasks=[task_name1,task_name2]` (note the `[]` brackets here needed) allows to select a sequence of tasks to execute, such as `training`, `validation` and `test`. Therefore, for testing a machine learning ckpt, you may run `python -m main load={your_wandb_run_id} experiment.tasks=[test]`.
 
 More generally, the task names are the corresponding method names of your experiment class. For `BaseLightningExperiment`, we already defined three methods `training`, `validation` and `test` for you, but you can also define your own tasks by creating methods to your experiment class under intended task names.
 
