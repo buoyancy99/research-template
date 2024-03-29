@@ -30,9 +30,26 @@ If using VScode, please modify `.vscode/settings.json` so python interpreter is 
 
 Run an example machine-learning experiment with a specified dataset and algorithm:
 `python -m main +name=xxxx experiment=example_classification dataset=example_cifar10 algorithm=example_classifier`
+The files for this example are:
+<ul>
+  <li>algorithms/examples/classifier/classifier.py</li>
+  <li>configurations/algorithm/example_classifier.yaml</li>
+  <li>datasets/example_classification/cifar10.py</li>
+  <li>configurations/dataset/example_cifar10.yaml</li>
+  <li>experiments/example_classification.py</li>
+  <li>configurations/experiment/example_classification.yaml</li>
+</ul>
 
 Run a generic example experiment (not necessarily ML):
 `python -m main +name=yyyy experiment=hello_world algorithm=hello_algo1`
+The files for this example are:
+<ul>
+  <li>algorithms/examples/helloworld/example_algos.py</li>
+  <li>configurations/algorithm/example_helloworld_1.yaml</li>
+  <li>experiments/example_helloworld.py</li>
+  <li>configurations/experiment/example_helloworld.yaml</li>
+</ul>
+
 
 Run a generic example experiment, with different algorithm:
 `python -m main +name=zzzz experiment=hello_world algorithm=hello_algo2`
