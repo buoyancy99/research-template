@@ -22,7 +22,7 @@ from lightning.pytorch.loggers.wandb import WandbLogger
 from wandb_osh.syncer import WandbSyncer
 
 from utils.print_utils import cyan
-from utils.wandb_utils import download_latest_checkpoint, is_run_id, OfflineWandbLogger
+from utils.wandb_utils import download_latest_checkpoint, is_run_id, OfflineWandbLogger, SpaceEfficientWandbLogger
 from utils.cluster_utils import submit_slurm_job
 from experiments import build_experiment
 
@@ -64,7 +64,7 @@ def run_local(cfg: DictConfig):
         if "_on_compute_node" in cfg and cfg.cluster.is_compute_node_offline:
             logger_cls = OfflineWandbLogger
         else:
-            logger_cls = WandbLogger
+            logger_cls = SpaceEfficientWandbLogger
 
         logger = logger_cls(
             name=name,
@@ -133,9 +133,7 @@ def run_slurm(cfg: DictConfig):
             cyan(f"wandb-osh --command-dir {osh_command_dir}"),
         )
 
-    print(
-        "Once the job gets allocated and starts running, output will be printed below: (Ctrl + C to exit printing)"
-    )
+    print("Once the job gets allocated and starts running, output will be printed below: (Ctrl + C to exit printing)")
     while not list(slurm_log_dir.glob("*.out")):
         time.sleep(1)
     os.system(f"tail -f {slurm_log_dir}/*.out")
@@ -158,7 +156,8 @@ def run(cfg: DictConfig):
     if not cfg.wandb.get("entity", None):
         raise ValueError(
             "must specify wandb entity in 'configurations/config.yaml' or with command line"
-            " argument 'wandb.entity=[entity]' \n An entity is your wandb user name or group name."
+            " argument 'wandb.entity=[entity]' \n An entity is your wandb user name or group"
+            " name. This is used for logging. If you don't have an wandb account, please signup at https://wandb.ai/"
         )
 
     if cfg.wandb.project is None:

@@ -10,7 +10,7 @@ training:
   batch_size: 32
   max_epochs: 10
   checkpointing:
-    every_n_train_steps: 10000
+    every_n_train_steps: 2000
 validation:
   val_every_n_step: null
   val_every_n_epoch: 1
