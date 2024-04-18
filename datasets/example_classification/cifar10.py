@@ -4,6 +4,11 @@ import torchvision
 import torchvision.transforms as transforms
 
 
+"""
+The dataset you want to define is a `torch.utils.data.Dataset` object. 
+In our example we inherit from a built in dataset from pytorch instead.
+"""
+
 class CIFAR10Dataset(torchvision.datasets.CIFAR10):
     def __init__(self, cfg: DictConfig, split="training"):
         """
