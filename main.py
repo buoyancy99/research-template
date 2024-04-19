@@ -134,9 +134,9 @@ def run_slurm(cfg: DictConfig):
         )
 
     print("Once the job gets allocated and starts running, output will be printed below: (Ctrl + C to exit printing)")
-    while not list(slurm_log_dir.glob("*.out")):
+    while not list(slurm_log_dir.glob("*.out")) and not list(slurm_log_dir.glob("*.err")):
         time.sleep(1)
-    os.system(f"tail -f {slurm_log_dir}/*.out")
+    os.system(f"tail -f {slurm_log_dir}/*")
 
 
 @hydra.main(
