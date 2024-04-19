@@ -15,6 +15,7 @@ from lightning.pytorch.callbacks import LearningRateMonitor, ModelCheckpoint
 from omegaconf import DictConfig
 
 from utils.print_utils import cyan
+from utils.distributed_utils import is_rank_zero
 
 
 class BaseExperiment(ABC):
@@ -73,7 +74,8 @@ class BaseExperiment(ABC):
         """
 
         if hasattr(self, task) and callable(getattr(self, task)):
-            print(cyan("Executing task:"), f"{task} out of {self.cfg.tasks}")
+            if is_rank_zero:
+                print(cyan("Executing task:"), f"{task} out of {self.cfg.tasks}")
             getattr(self, task)()
         else:
             raise ValueError(

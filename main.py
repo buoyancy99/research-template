@@ -24,6 +24,7 @@ from wandb_osh.syncer import WandbSyncer
 from utils.print_utils import cyan
 from utils.wandb_utils import download_latest_checkpoint, is_run_id, OfflineWandbLogger, SpaceEfficientWandbLogger
 from utils.cluster_utils import submit_slurm_job
+from utils.distributed_utils import is_rank_zero
 from experiments import build_experiment
 
 
@@ -51,9 +52,10 @@ def run_local(cfg: DictConfig):
 
     # Set up the output directory.
     output_dir = Path(hydra_cfg.runtime.output_dir)
-    print(cyan(f"Outputs will be saved to:"), output_dir)
-    (output_dir.parents[1] / "latest-run").unlink(missing_ok=True)
-    (output_dir.parents[1] / "latest-run").symlink_to(output_dir, target_is_directory=True)
+    if is_rank_zero:
+        print(cyan(f"Outputs will be saved to:"), output_dir)
+        (output_dir.parents[1] / "latest-run").unlink(missing_ok=True)
+        (output_dir.parents[1] / "latest-run").symlink_to(output_dir, target_is_directory=True)
 
     # Set up logging with wandb.
     if cfg.wandb.mode != "disabled":
@@ -96,7 +98,7 @@ def run_local(cfg: DictConfig):
         run_path = f"{cfg.wandb.entity}/{cfg.wandb.project}/{load_id}"
         checkpoint_path = Path("outputs/downloaded") / run_path / "model.ckpt"
 
-    if checkpoint_path:
+    if checkpoint_path and is_rank_zero:
         print(f"Will load checkpoint from {checkpoint_path}")
 
     # launch experiment
