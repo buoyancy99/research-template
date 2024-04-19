@@ -5,7 +5,7 @@
 # Infra instructions
 This repo is forked from [Boyuan Chen](https://boyuan.space/)'s research template repo.
 
-All experiments can be launched via `python -m main {options}` where you can fine more details later in this article.
+All experiments can be launched via `python -m main +name=xxxx {options}` where you can fine more details later in this article.
 
 The code base will automatically use cuda or your Macbook M1 GPU when available.
 
