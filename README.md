@@ -5,7 +5,7 @@
 # Infra instructions
 This repo is forked from [Boyuan Chen](https://boyuan.space/)'s research template repo.
 
-All experiments can be launched via `python -m main {options}` where you can fine more details later in this article.
+All experiments can be launched via `python -m main +name=xxxx {options}` where you can fine more details later in this article.
 
 The code base will automatically use cuda or your Macbook M1 GPU when available.
 
@@ -31,7 +31,7 @@ If using VScode, please modify `.vscode/settings.json` so python interpreter is 
 Run an example machine-learning experiment with a specified dataset and algorithm:
 `python -m main +name=xxxx experiment=example_classification dataset=example_cifar10 algorithm=example_classifier`
 
-The files for this example are:
+The files associated with this example are:
 <ul>
   <li>algorithms/examples/classifier/classifier.py</li>
   <li>configurations/algorithm/example_classifier.yaml</li>
@@ -44,7 +44,7 @@ The files for this example are:
 Run a generic example experiment (not necessarily ML):
 `python -m main +name=yyyy experiment=hello_world algorithm=hello_algo1`
 
-The files for this example are:
+The files associated with this example are:
 <ul>
   <li>algorithms/examples/helloworld/example_algos.py</li>
   <li>configurations/algorithm/example_helloworld_1.yaml</li>
