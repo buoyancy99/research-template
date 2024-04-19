@@ -115,7 +115,8 @@ class SpaceEfficientWandbLogger(WandbLogger):
             artifacts.append(artifact)
 
         for artifact in self._last_artifacts:
-            artifact.wait()
+            if not self._offline:
+                artifact.wait()
             artifact.ttl = timedelta(days=self.expiration_days)
             artifact.save()
         self._last_artifacts = artifacts
