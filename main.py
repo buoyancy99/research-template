@@ -135,10 +135,21 @@ def run_slurm(cfg: DictConfig):
             cyan(f"wandb-osh --command-dir {osh_command_dir}"),
         )
 
-    print("Once the job gets allocated and starts running, output will be printed below: (Ctrl + C to exit printing)")
-    while not list(slurm_log_dir.glob("*.out")) and not list(slurm_log_dir.glob("*.err")):
-        time.sleep(1)
-    os.system(f"tail -f {slurm_log_dir}/*")
+    print(
+        "Once the job gets allocated and starts running, we will print a command below "
+        "for you to trace the errors and outputs: (Ctrl + C to exit without waiting)"
+    )
+    msg = f"tail -f {slurm_log_dir}/* \n"
+    try:
+        while not list(slurm_log_dir.glob("*.out")) and not list(slurm_log_dir.glob("*.err")):
+            time.sleep(1)
+        print(cyan("To trace the outputs and errors, run the following command:"))
+    except KeyboardInterrupt:
+        print("Keyboard interrupt detected. Exiting...")
+        print(
+            cyan("To trace the outputs and errors, manually wait for the job to start and run the following command:")
+        )
+    print(msg)
 
 
 @hydra.main(
