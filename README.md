@@ -55,6 +55,12 @@ The files associated with this example are:
 
 Run a generic example experiment, with different algorithm:
 `python -m main +name=zzzz experiment=hello_world algorithm=hello_algo2`
+<ul>
+  <li>algorithms/examples/helloworld/example_algos.py</li>
+  <li>configurations/algorithm/example_helloworld_2.yaml</li>
+  <li>experiments/example_helloworld.py</li>
+  <li>configurations/experiment/example_helloworld.yaml</li>
+</ul>
 
 ## Modify for your own project
 
