@@ -128,13 +128,13 @@ def run_slurm(cfg: DictConfig):
     try:
         while not list(slurm_log_dir.glob("*.out")) and not list(slurm_log_dir.glob("*.err")):
             time.sleep(1)
-        print(cyan("To trace the outputs and errors, run the following command:"))
+        print(cyan("To trace the outputs and errors, run the following command:"), msg)
     except KeyboardInterrupt:
         print("Keyboard interrupt detected. Exiting...")
         print(
-            cyan("To trace the outputs and errors, manually wait for the job to start and run the following command:")
+            cyan("To trace the outputs and errors, manually wait for the job to start and run the following command:"), 
+            msg
         )
-    print(msg)
 
 
 @hydra.main(
