@@ -3,40 +3,25 @@ Main file for the project. This will create and run new experiments and load che
 Borrowed part of the code from David Charatan and wandb.
 """
 
-import os
 import sys
 import subprocess
-import select
 import time
-import click
-from datetime import timedelta
 from pathlib import Path
-from typing import Any, Dict
 
 import hydra
-import torch
-import wandb
 from omegaconf import DictConfig, OmegaConf
 from omegaconf.omegaconf import open_dict
-from lightning.pytorch.loggers.wandb import WandbLogger
-from wandb_osh.syncer import WandbSyncer
 
 from utils.print_utils import cyan
-from utils.wandb_utils import download_latest_checkpoint, is_run_id, OfflineWandbLogger, SpaceEfficientWandbLogger
+from utils.ckpt_utils import download_latest_checkpoint, is_run_id
 from utils.cluster_utils import submit_slurm_job
 from utils.distributed_utils import is_rank_zero
-from experiments import build_experiment
-
-
-# Set matmul precision (for newer GPUs, e.g., A6000).
-if hasattr(torch, "set_float32_matmul_precision"):
-    torch.set_float32_matmul_precision("high")
 
 
 def run_local(cfg: DictConfig):
-    # Enforce the correct Python version.
-    if sys.version_info.major < 3 or sys.version_info.minor < 9:
-        print("Please use Python 3.9+. ")
+    # delay some imports in case they are not needed in non-local envs for submission
+    from experiments import build_experiment
+    from utils.wandb_utils import OfflineWandbLogger, SpaceEfficientWandbLogger
 
     # Get yaml names
     hydra_cfg = hydra.core.hydra_config.HydraConfig.get()

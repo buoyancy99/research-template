@@ -1,11 +1,9 @@
 from pathlib import Path
 from datetime import timedelta
-from typing import TYPE_CHECKING, Any, Dict, List, Literal, Mapping, Optional, Union
+from typing import TYPE_CHECKING, Any, Literal, Mapping, Optional, Union
 from typing_extensions import override
 from functools import wraps
-import torch
 import os
-import wandb
 from wandb_osh.hooks import TriggerWandbSyncHook
 import time
 from lightning.pytorch.loggers.wandb import WandbLogger, _scan_checkpoints, ModelCheckpoint, Tensor
@@ -14,7 +12,6 @@ from lightning.fabric.utilities.types import _PATH
 
 
 if TYPE_CHECKING:
-    from wandb import Artifact
     from wandb.sdk.lib import RunDisabled
     from wandb.wandb_run import Run
 
@@ -176,66 +173,3 @@ class OfflineWandbLogger(SpaceEfficientWandbLogger):
             self.trigger_sync(self.wandb_dir)
             self.last_sync_time = time.time()
         return out
-
-
-def version_to_int(artifact) -> int:
-    """Convert versions of the form vX to X. For example, v12 to 12."""
-    return int(artifact.version[1:])
-
-
-def download_latest_checkpoint(run_path: str, download_dir: Path) -> Path:
-    api = wandb.Api()
-    run = api.run(run_path)
-
-    # Find the latest saved model checkpoint.
-    latest = None
-    for artifact in run.logged_artifacts():
-        if artifact.type != "model" or artifact.state != "COMMITTED":
-            continue
-
-        if latest is None or version_to_int(artifact) > version_to_int(latest):
-            latest = artifact
-
-    # Download the checkpoint.
-    download_dir.mkdir(exist_ok=True, parents=True)
-    root = download_dir / run_path
-    latest.download(root=root)
-    return root / "model.ckpt"
-
-
-REWRITES = []
-
-
-def rewrite_checkpoint_for_compatibility(path: Optional[Path]) -> Optional[Path]:
-    """Rewrite checkpoint to account for old versions. It's fine if this is messy."""
-    if path is None:
-        return None
-
-    # Load the checkpoint.
-    checkpoint = torch.load(path)
-
-    # If necessary, rewrite the checkpoint.
-    # This ensures that the current code can load checkpoints from old code versions.
-    used_rewrite = False
-    state_dict = checkpoint["state_dict"]
-    for key, value in list(state_dict.items()):
-        for old, new in REWRITES:
-            if old in key:
-                new_key = key.replace(old, new)
-                state_dict[new_key] = value
-                del state_dict[key]
-                used_rewrite = True
-
-    # If nothing was changed, there's no need to save a new checkpoint.
-    if not used_rewrite:
-        return path
-
-    # Save the modified checkpoint.
-    new_path = path.parent / f"{path.name}.rewrite"
-    torch.save(checkpoint, new_path)
-    return new_path
-
-
-def is_run_id(run_id: str) -> bool:
-    """Check if a string is a run ID."""
-    return len(run_id) == 8 and run_id.isalnum()
