@@ -102,12 +102,14 @@ class BaseLightningExperiment(BaseExperiment):
 
     def _build_training_loader(self) -> Optional[Union[TRAIN_DATALOADERS, pl.LightningDataModule]]:
         train_dataset = self._build_dataset("training")
+        shuffle = False if isinstance(train_dataset, torch.utils.data.IterableDataset) \
+            else self.cfg.experiment.test.data.shuffle
         if train_dataset:
             return torch.utils.data.DataLoader(
                 train_dataset,
                 batch_size=self.cfg.training.batch_size,
                 num_workers=min(os.cpu_count(), self.cfg.training.data.num_workers),
-                shuffle=self.cfg.training.data.shuffle,
+                shuffle=shuffle,
                 persistent_workers=True,
             )
         else:
@@ -115,12 +117,14 @@ class BaseLightningExperiment(BaseExperiment):
 
     def _build_validation_loader(self) -> Optional[Union[TRAIN_DATALOADERS, pl.LightningDataModule]]:
         validation_dataset = self._build_dataset("validation")
+        shuffle = False if isinstance(validation_dataset, torch.utils.data.IterableDataset) \
+            else self.cfg.experiment.test.data.shuffle
         if validation_dataset:
             return torch.utils.data.DataLoader(
                 validation_dataset,
                 batch_size=self.cfg.validation.batch_size,
                 num_workers=min(os.cpu_count(), self.cfg.validation.data.num_workers),
-                shuffle=self.cfg.validation.data.shuffle,
+                shuffle=shuffle,
                 persistent_workers=True,
             )
         else:
@@ -128,12 +132,14 @@ class BaseLightningExperiment(BaseExperiment):
 
     def _build_test_loader(self) -> Optional[Union[TRAIN_DATALOADERS, pl.LightningDataModule]]:
         test_dataset = self._build_dataset("test")
+        shuffle = False if isinstance(test_dataset, torch.utils.data.IterableDataset) \
+            else self.cfg.experiment.test.data.shuffle
         if test_dataset:
             return torch.utils.data.DataLoader(
                 test_dataset,
                 batch_size=self.cfg.test.batch_size,
                 num_workers=min(os.cpu_count(), self.cfg.test.data.num_workers),
-                shuffle=self.cfg.test.data.shuffle,
+                shuffle=shuffle,
                 persistent_workers=True,
             )
         else:
