@@ -102,8 +102,9 @@ class BaseLightningExperiment(BaseExperiment):
 
     def _build_training_loader(self) -> Optional[Union[TRAIN_DATALOADERS, pl.LightningDataModule]]:
         train_dataset = self._build_dataset("training")
-        shuffle = False if isinstance(train_dataset, torch.utils.data.IterableDataset) \
-            else self.cfg.experiment.test.data.shuffle
+        shuffle = (
+            False if isinstance(train_dataset, torch.utils.data.IterableDataset) else self.cfg.training.data.shuffle
+        )
         if train_dataset:
             return torch.utils.data.DataLoader(
                 train_dataset,
@@ -117,8 +118,11 @@ class BaseLightningExperiment(BaseExperiment):
 
     def _build_validation_loader(self) -> Optional[Union[TRAIN_DATALOADERS, pl.LightningDataModule]]:
         validation_dataset = self._build_dataset("validation")
-        shuffle = False if isinstance(validation_dataset, torch.utils.data.IterableDataset) \
-            else self.cfg.experiment.test.data.shuffle
+        shuffle = (
+            False
+            if isinstance(validation_dataset, torch.utils.data.IterableDataset)
+            else self.cfg.validation.data.shuffle
+        )
         if validation_dataset:
             return torch.utils.data.DataLoader(
                 validation_dataset,
@@ -132,8 +136,7 @@ class BaseLightningExperiment(BaseExperiment):
 
     def _build_test_loader(self) -> Optional[Union[TRAIN_DATALOADERS, pl.LightningDataModule]]:
         test_dataset = self._build_dataset("test")
-        shuffle = False if isinstance(test_dataset, torch.utils.data.IterableDataset) \
-            else self.cfg.experiment.test.data.shuffle
+        shuffle = False if isinstance(test_dataset, torch.utils.data.IterableDataset) else self.cfg.test.data.shuffle
         if test_dataset:
             return torch.utils.data.DataLoader(
                 test_dataset,
