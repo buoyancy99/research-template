@@ -182,6 +182,9 @@ class BaseLightningExperiment(BaseExperiment):
             precision=self.cfg.training.precision,
             detect_anomaly=False,  # self.cfg.debug,
             num_sanity_val_steps=int(self.cfg.debug),
+            max_epochs=self.cfg.training.max_epochs,
+            max_steps=self.cfg.training.max_steps,
+            max_time=self.cfg.training.max_time,
         )
 
         # if self.debug:
