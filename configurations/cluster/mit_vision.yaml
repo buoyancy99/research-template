@@ -2,8 +2,8 @@ defaults:
   - base_slurm
 
 params:
-  partition: vision-sitzmann
-  qos: vision-sitzmann-main
+  partition: null # e.g. vision-sitzmann
+  qos: null # e.g. vision-sitzmann-main
 
 launch_template: |
   #!/bin/bash

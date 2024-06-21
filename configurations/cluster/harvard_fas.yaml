@@ -1,6 +1,10 @@
 defaults:
   - base_slurm
 
+params:
+  partition: null # e.g. kempner_h100
+  account: null # e.g. kempner_sham_lab
+
 launch_template: |
   #!/bin/bash
 
@@ -9,6 +13,8 @@ launch_template: |
   #SBATCH -e {log_dir}/error_%j.err
   #SBATCH --mail-user={email}
   #SBATCH --mail-type=FAIL
+  #SBATCH --account={account}
+  #SBATCH --partition={partition}
   #SBATCH --gres=gpu:h100:{num_gpus}
   #SBATCH --cpus-per-task={num_cpus}
   #SBATCH --mem={memory}
