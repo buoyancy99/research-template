@@ -1,0 +1,20 @@
+defaults:
+  - base_slurm
+
+launch_template: |
+  #!/bin/bash
+
+  #SBATCH -J {name}
+  #SBATCH -o {log_dir}/out_%j.out
+  #SBATCH -e {log_dir}/error_%j.err
+  #SBATCH --mail-user={email}
+  #SBATCH --mail-type=FAIL
+  #SBATCH --gres=gpu:h100:{num_gpus}
+  #SBATCH --cpus-per-task={num_cpus}
+  #SBATCH --mem={memory}
+  #SBATCH --time={time}
+
+  cd {project_root}
+  module load Mambaforge
+  mamba activate {env_name}
+  python -m main {python_args}
