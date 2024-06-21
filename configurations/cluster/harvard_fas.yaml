@@ -15,7 +15,7 @@ launch_template: |
   #SBATCH --mail-type=FAIL
   #SBATCH --account={account}
   #SBATCH --partition={partition}
-  #SBATCH --gres=gpu:h100:{num_gpus}
+  #SBATCH --gres=gpu:{num_gpus}
   #SBATCH --cpus-per-task={num_cpus}
   #SBATCH --mem={memory}
   #SBATCH --time={time}
