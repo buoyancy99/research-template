@@ -17,6 +17,8 @@ from omegaconf import DictConfig
 from utils.print_utils import cyan
 from utils.distributed_utils import is_rank_zero
 
+torch.set_float32_matmul_precision("high")
+
 
 class BaseExperiment(ABC):
     """
