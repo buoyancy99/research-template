@@ -15,12 +15,18 @@ launch_template: |
   #SBATCH --mail-type=FAIL
   #SBATCH --account={account}
   #SBATCH --partition={partition}
+  #SBATCH --nodes=${experiment.num_nodes}
+  #SBATCH --ntasks-per-node=${experiment.num_nodes}
   #SBATCH --gres=gpu:{num_gpus}
   #SBATCH --cpus-per-task={num_cpus}
   #SBATCH --mem={memory}
   #SBATCH --time={time}
 
+  # export NCCL_DEBUG=INFO
+  # export PYTHONFAULTHANDLER=1
+
   cd {project_root}
   module load Mambaforge
   mamba activate {env_name}
-  python -m main {python_args}
+  
+  srun python -m main {python_args}

@@ -5,6 +5,7 @@ defaults:
   - base_experiment
 
 tasks: [training] # tasks to run sequantially, change when your project has multiple stages and you want to run only a subset of them.
+num_nodes: 1 # number of gpu servers used in large scale distributed training
 
 training:
   precision: 16-mixed # set float precision, 16-mixed is faster while 32 is more stable
