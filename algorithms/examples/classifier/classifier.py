@@ -9,11 +9,12 @@ from .models import arch_registry
 
 class Classifier(BasePytorchAlgo):
     """
+    BasePytorchAlgo's parent class is a pytorch_lightning module whose parent class is nn.Module.
+    Pytorch lightning is basically forward method & training loop in a single class.
+    See Pytorch lightning documentation https://lightning.ai/docs/pytorch/stable/ for more details.
+    
     A sample algorithm doing classification for CIFAR-10.
     Adopted from https://github.com/kuangliu/pytorch-cifar
-
-    For fancy examples in pytorch lightning, such as GANs with multiple optimizers,
-    see https://lightning.ai/docs/pytorch/stable/ for more details.
     """
 
     def __init__(self, cfg):
