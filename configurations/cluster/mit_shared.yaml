@@ -1,0 +1,29 @@
+defaults:
+  - base_slurm
+
+params:
+  partition: csail-shared
+  qos: lab-free
+  num_gpus: 8
+  memory: 256G
+  num_cpus: 128
+  time: "24:0:0"
+
+launch_template: |
+  #!/bin/bash
+
+  #SBATCH -J {name}
+  #SBATCH -o {log_dir}/out_%j.out
+  #SBATCH -e {log_dir}/error_%j.err
+  #SBATCH --mail-user={email}
+  #SBATCH --mail-type=FAIL
+  #SBATCH --gres=gpu:h100:{num_gpus}
+  #SBATCH --cpus-per-task={num_cpus}
+  #SBATCH --mem={memory}
+  #SBATCH --time={time}
+  #SBATCH --partition={partition}
+  #SBATCH --qos={qos}
+  source /data/scratch/boyuanc/.bashrc
+  conda activate {env_name}
+  cd {project_root}
+  python -m main {python_args}
