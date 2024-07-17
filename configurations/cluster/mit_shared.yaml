@@ -17,7 +17,7 @@ launch_template: |
   #SBATCH -e {log_dir}/error_%j.err
   #SBATCH --mail-user={email}
   #SBATCH --mail-type=FAIL
-  #SBATCH --gres=gpu:h100:{num_gpus}
+  #SBATCH --gres=gpu:{num_gpus}
   #SBATCH --cpus-per-task={num_cpus}
   #SBATCH --mem={memory}
   #SBATCH --time={time}
