@@ -221,6 +221,7 @@ class BaseLightningExperiment(BaseExperiment):
             limit_val_batches=self.cfg.validation.limit_batch,
             precision=self.cfg.validation.precision,
             detect_anomaly=False,  # self.cfg.debug,
+            inference_mode=self.cfg.validation.inference_mode,
         )
 
         # if self.debug:
@@ -253,6 +254,7 @@ class BaseLightningExperiment(BaseExperiment):
             limit_test_batches=self.cfg.test.limit_batch,
             precision=self.cfg.test.precision,
             detect_anomaly=False,  # self.cfg.debug,
+            inference_mode=self.cfg.test.inference_mode,
         )
 
         # Only load the checkpoint if only testing. Otherwise, it will have been loaded

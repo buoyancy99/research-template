@@ -1,16 +1,17 @@
 # Project Instructions
+
 [Write your project specific instructions here]
 
-
 # Infra instructions
-This repo is forked from [Boyuan Chen](https://boyuan.space/)'s research template repo.
+
+This repo is forked from [Boyuan Chen](https://boyuan.space/)'s research template [repo](https://github.com/buoyancy99/research-template). By MIT license, you must keep the above sentence and `LICENSE` file to credit the author.
 
 All experiments can be launched via `python -m main +name=xxxx {options}` where you can fine more details later in this article.
 
 The code base will automatically use cuda or your Macbook M1 GPU when available.
 
-For slurm clusters e.g. mit supercloud, you can run `python -m main cluster=mit_supercloud {options}` on login node. 
-It will automatically generate slurm scripts and run them for you on a compute node. Even if compute nodes are offline, 
+For slurm clusters e.g. mit supercloud, you can run `python -m main cluster=mit_supercloud {options}` on login node.
+It will automatically generate slurm scripts and run them for you on a compute node. Even if compute nodes are offline,
 the script will still automatically sync wandb logging to cloud with <1min latency. It's also easy to add your own slurm
 by following the `Add slurm clusters` section.
 
@@ -32,6 +33,7 @@ Run an example machine-learning experiment with a specified dataset and algorith
 `python -m main +name=xxxx experiment=example_classification dataset=example_cifar10 algorithm=example_classifier`
 
 The files associated with this example are:
+
 <ul>
   <li>algorithms/examples/classifier/classifier.py</li>
   <li>configurations/algorithm/example_classifier.yaml</li>
@@ -45,6 +47,7 @@ Run a generic example experiment (not necessarily ML):
 `python -m main +name=yyyy experiment=hello_world algorithm=hello_algo1`
 
 The files associated with this example are:
+
 <ul>
   <li>algorithms/examples/helloworld/example_algos.py</li>
   <li>configurations/algorithm/example_helloworld_1.yaml</li>
@@ -52,9 +55,9 @@ The files associated with this example are:
   <li>configurations/experiment/example_helloworld.yaml</li>
 </ul>
 
-
 Run a generic example experiment, with different algorithm:
 `python -m main +name=zzzz experiment=hello_world algorithm=hello_algo2`
+
 <ul>
   <li>algorithms/examples/helloworld/example_algos.py</li>
   <li>configurations/algorithm/example_helloworld_2.yaml</li>
@@ -79,7 +82,7 @@ Add your method and baselines in `algorithms` following the `algorithms/README.m
 Add your experiment in `experiments` following the `experiments/README.md` or following the example code in
 `experiments/exp_classification.py`. Then register your experiment in `experiments/__init__.py`.
 Finally, add a yaml config file to `configurations/experiment` imitating that of
-`configurations/experiment/example_classification.yaml`, for each experiment you added. 
+`configurations/experiment/example_classification.yaml`, for each experiment you added.
 
 Modify `configurations/config.yaml` to set `algorithm` to the yaml file you want to use in `configurations/algorithm`;
 set `experiment` to the yaml file you want to use in `configurations/experiment`; set `dataset` to the yaml file you
@@ -96,24 +99,26 @@ One special note, if your want to define a new task for your experiment, (e.g. o
 ## Pass in arguments
 
 We use [hydra](https://hydra.cc) instead of `argparse` to configure arguments at every code level. You can both write a static config in `configuration` folder or, at runtime,
-[override part of yur static config](https://hydra.cc/docs/tutorials/basic/your_first_app/simple_cli/) with command line arguments. 
+[override part of yur static config](https://hydra.cc/docs/tutorials/basic/your_first_app/simple_cli/) with command line arguments.
 
 For example, arguments `algorithm=example_classifier experiment.lr=1e-3` will override the `lr` variable in `configurations/experiment/example_classifier.yaml`. The argument `wandb.mode` will override the `mode` under `wandb` namesspace in the file `configurations/config.yaml`.
 
 All static config and runtime override will be logged to cloud automatically.
 
-
 ## Resume a checkpoint & logging
+
 For machine learning experiments, all checkpoints and logs are logged to cloud automatically so you can resume them on another server. Simply append `resume={wandb_run_id}` to your command line arguments to resume it. The run_id can be founded in a url of a wandb run in wandb dashboard. By default, latest checkpoint in a run is stored indefinitely and earlier checkpoints in the run will be deleted after 5 days to save your storage.
 
 On the other hand, sometimes you may want to start a new run with different run id but still load a prior ckpt. This can be done by setting the `load={wandb_run_id / ckpt path}` flag.
 
 ## Load a checkpoint to eval
+
 The argument `experiment.tasks=[task_name1,task_name2]` (note the `[]` brackets here needed) allows to select a sequence of tasks to execute, such as `training`, `validation` and `test`. Therefore, for testing a machine learning ckpt, you may run `python -m main load={your_wandb_run_id} experiment.tasks=[test]`.
 
 More generally, the task names are the corresponding method names of your experiment class. For `BaseLightningExperiment`, we already defined three methods `training`, `validation` and `test` for you, but you can also define your own tasks by creating methods to your experiment class under intended task names.
 
 ## Debug
+
 We provide a useful debug flag which you can enable by `python main.py debug=True`. This will enable numerical error tracking as well as setting `cfg.debug` to `True` for your experiments, algorithms and datasets class. However, this debug flag will make ML code very slow as it automatically tracks all parameter / gradients!
 
 ## Hyperparameter Sweep
@@ -121,29 +126,28 @@ We provide a useful debug flag which you can enable by `python main.py debug=Tru
 Launch hyperparameter sweep via: `wandb sweep configurations/sweep/example_sweep.yaml`
 Then, launch sweep agents on different servers by running the command printed by the controller (e.g., `wandb agent <agent_id>`).
 
-
 ## Add slurm clusters
-It's very easy to add your own slurm clusters via adding a yaml file in `configurations/cluster`. You can take a look 
-at `configurations/cluster/mit_supercloud.yaml` for example. 
 
+It's very easy to add your own slurm clusters via adding a yaml file in `configurations/cluster`. You can take a look
+at `configurations/cluster/mit_supercloud.yaml` for example.
 
 ## Feature Roadmap
 
-| **Features**                  | **This repo** |
-| ---------------------------   | ----------------------|
-| README level documentation    | :heavy_check_mark: |
-| Examples  (ML & Non ML)       | :heavy_check_mark: |
-| Cloud checkpoint save / load  | :heavy_check_mark: |
-| Cloud logging                 | :heavy_check_mark: |
-| Hyper-parameter logging       | :heavy_check_mark: |
-| Static yaml configuration     | :heavy_check_mark: |
+| **Features**                      | **This repo**      |
+| --------------------------------- | ------------------ |
+| README level documentation        | :heavy_check_mark: |
+| Examples (ML & Non ML)            | :heavy_check_mark: |
+| Cloud checkpoint save / load      | :heavy_check_mark: |
+| Cloud logging                     | :heavy_check_mark: |
+| Hyper-parameter logging           | :heavy_check_mark: |
+| Static yaml configuration         | :heavy_check_mark: |
 | Yaml config override by arugment  | :heavy_check_mark: |
-| Submit UI for MIT cluster     | :heavy_check_mark: |
-| Distributed training          | :heavy_check_mark: |
-| Low precision training        | :heavy_check_mark: |
+| Submit UI for MIT cluster         | :heavy_check_mark: |
+| Distributed training              | :heavy_check_mark: |
+| Low precision training            | :heavy_check_mark: |
 | Distributed hyper-parameter sweep | :heavy_check_mark: |
-| Debug mode                    | :heavy_check_mark: |
-| PEP 8 Style                   | :heavy_check_mark: |
-| Type hints                    | :heavy_check_mark: |
-| Wiki style documentation      | :x: |
-| Unit test                     | :x: |
+| Debug mode                        | :heavy_check_mark: |
+| PEP 8 Style                       | :heavy_check_mark: |
+| Type hints                        | :heavy_check_mark: |
+| Wiki style documentation          | :x:                |
+| Unit test                         | :x:                |

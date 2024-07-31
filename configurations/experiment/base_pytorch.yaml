@@ -31,6 +31,7 @@ training:
 validation:
   precision: 16-mixed
   compile: False # whether to compile the model with torch.compile
+  inference_mode: True # save memory but makes torch.enable_grad() not work
   batch_size: 16 # validation batch size per GPU; effective batch size is this number * gpu * nodes iff using distributed training
   val_every_n_step: 2000 # controls how frequent do we run validation, can be float (fraction of epoches) or int (steps) or null (if val_every_n_epoch is set)
   val_every_n_epoch: null # if you want to do validation every n epoches, requires val_every_n_step to be null.
@@ -42,6 +43,7 @@ validation:
 test:
   precision: 16-mixed
   compile: False # whether to compile the model with torch.compile
+  inference_mode: True # save memory but makes torch.enable_grad() not work
   batch_size: 16 # test batch size per GPU; effective batch size is this number * gpu * nodes iff using distributed training
   limit_batch: null # if null, run through test set. Otherwise limit the number of batches to use for test.
   data:
