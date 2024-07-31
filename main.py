@@ -1,4 +1,9 @@
 """
+This repo is forked from [Boyuan Chen](https://boyuan.space/)'s research 
+template [repo](https://github.com/buoyancy99/research-template). 
+By its MIT license, you must keep the above sentence in `README.md` 
+and the `LICENSE` file to credit the author.
+
 Main file for the project. This will create and run new experiments and load checkpoints from wandb. 
 Borrowed part of the code from David Charatan and wandb.
 """
@@ -132,8 +137,8 @@ def run_slurm(cfg: DictConfig):
     except KeyboardInterrupt:
         print("Keyboard interrupt detected. Exiting...")
         print(
-            cyan("To trace the outputs and errors, manually wait for the job to start and run the following command:"), 
-            msg
+            cyan("To trace the outputs and errors, manually wait for the job to start and run the following command:"),
+            msg,
         )
 
 

@@ -4,7 +4,7 @@
 
 # Infra instructions
 
-This repo is forked from [Boyuan Chen](https://boyuan.space/)'s research template [repo](https://github.com/buoyancy99/research-template). By MIT license, you must keep the above sentence and `LICENSE` file to credit the author.
+This repo is forked from [Boyuan Chen](https://boyuan.space/)'s research template [repo](https://github.com/buoyancy99/research-template). By its MIT license, you must keep the above sentence in `README.md` and the `LICENSE` file to credit the author.
 
 All experiments can be launched via `python -m main +name=xxxx {options}` where you can fine more details later in this article.
 
@@ -25,7 +25,7 @@ Run `pip install -r requirements.txt` to install all dependencies.
 
 Then modify the wandb entity (account) in `configurations/config.yaml`.
 
-If using VScode, please modify `.vscode/settings.json` so python interpreter is set correctly.
+If using VScode, we recommend install [Black Formatter](https://marketplace.visualstudio.com/items?itemName=ms-python.black-formatter) for consistent auto formatting with the orignal code.
 
 ## Run built-in example
 
@@ -129,7 +129,7 @@ Then, launch sweep agents on different servers by running the command printed by
 ## Add slurm clusters
 
 It's very easy to add your own slurm clusters via adding a yaml file in `configurations/cluster`. You can take a look
-at `configurations/cluster/mit_supercloud.yaml` for example.
+at `configurations/cluster/mit_supercloud.yaml` for example. If you are from an academic institute, feel free to create a pull request to add your school's cluster to our repo.
 
 ## Feature Roadmap
 

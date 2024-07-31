@@ -1,5 +1,10 @@
-import lightning.pytorch as pl
-import numpy as np
+"""
+This repo is forked from [Boyuan Chen](https://boyuan.space/)'s research 
+template [repo](https://github.com/buoyancy99/research-template). 
+By its MIT license, you must keep the above sentence in `README.md` 
+and the `LICENSE` file to credit the author.
+"""
+
 import torch
 import torch.nn as nn
 
@@ -12,7 +17,7 @@ class Classifier(BasePytorchAlgo):
     BasePytorchAlgo's parent class is a pytorch_lightning module whose parent class is nn.Module.
     Pytorch lightning is basically forward method & training loop in a single class.
     See Pytorch lightning documentation https://lightning.ai/docs/pytorch/stable/ for more details.
-    
+
     A sample algorithm doing classification for CIFAR-10.
     Adopted from https://github.com/kuangliu/pytorch-cifar
     """
