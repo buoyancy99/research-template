@@ -2,15 +2,17 @@
 
 [Write your project specific instructions here]
 
-# Cite us as
+If you find this research template helpful to you, please cite us as
 
 ```
-@misc{templatecode,
-  author = {Boyuan Chen},
-  title = {templatecode},
-  year = {2024},
-  note = {GitHub repository for research template code},
-  url = {https://github.com/buoyancy99/research-template}
+@misc{chen2024diffusionforcingnexttokenprediction,
+      title={Diffusion Forcing: Next-token Prediction Meets Full-Sequence Diffusion},
+      author={Boyuan Chen and Diego Marti Monso and Yilun Du and Max Simchowitz and Russ Tedrake and Vincent Sitzmann},
+      year={2024},
+      eprint={2407.01392},
+      archivePrefix={arXiv},
+      primaryClass={cs.LG},
+      url={https://arxiv.org/abs/2407.01392},
 }
 ```
 
