@@ -2,6 +2,18 @@
 
 [Write your project specific instructions here]
 
+# Cite us as
+
+```
+@misc{templatecode,
+  author = {Boyuan Chen},
+  title = {templatecode},
+  year = {2024},
+  note = {GitHub repository for research template code},
+  url = {https://github.com/buoyancy99/research-template}
+}
+```
+
 # Infra instructions
 
 This repo is forked from [Boyuan Chen](https://boyuan.space/)'s research template [repo](https://github.com/buoyancy99/research-template). By its MIT license, you must keep the above sentence in `README.md` and the `LICENSE` file to credit the author.
