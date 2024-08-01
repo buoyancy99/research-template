@@ -93,6 +93,8 @@ def run_local(cfg: DictConfig):
 
     # launch experiment
     experiment = build_experiment(cfg, logger, checkpoint_path)
+
+    # for those who are searching, this is where we call tasks like 'training, validation, main'
     for task in cfg.experiment.tasks:
         experiment.exec_task(task)
 
