@@ -1,6 +1,6 @@
 # Project Instructions
 
-[Write your project specific instructions here]
+[Write your project-specific instructions here]
 
 If you find this research template helpful to you, please cite us as
 
@@ -20,7 +20,7 @@ If you find this research template helpful to you, please cite us as
 
 This repo is forked from [Boyuan Chen](https://boyuan.space/)'s research template [repo](https://github.com/buoyancy99/research-template). By its MIT license, we just ask you to keep the above sentence and link in `README.md` and the `LICENSE` file to credit the author.
 
-All experiments can be launched via `python -m main +name=xxxx {options}` where you can fine more details later in this article.
+All experiments can be launched via `python -m main +name=xxxx {options}` where you can find more details later in this article.
 
 The code base will automatically use cuda or your Macbook M1 GPU when available.
 
@@ -39,7 +39,7 @@ Run `pip install -r requirements.txt` to install all dependencies.
 
 Then modify the wandb entity (account) in `configurations/config.yaml`.
 
-If using VScode, we recommend install [Black Formatter](https://marketplace.visualstudio.com/items?itemName=ms-python.black-formatter) for consistent auto formatting with the orignal code.
+If using VScode, we recommend installing [Black Formatter](https://marketplace.visualstudio.com/items?itemName=ms-python.black-formatter) for consistent auto-formatting with the original code.
 
 ## Run built-in example
 
