@@ -95,7 +95,8 @@ For pytorch experiments, write your algorithm as a [pytorch lightning](https://g
 `configurations/dataset/example_cifar10.yaml`, for each dataset you added.
 
 Add your experiment in `experiments` following the `experiments/README.md` or following the example code in
-`experiments/exp_classification.py`. Then register your experiment in `experiments/__init__.py`. Usually, an experiment is just a registration of algorithms and datasets, as a training_step is defined via `algorithms` instead.
+`experiments/exp_classification.py`. Then register your experiment in `experiments/__init__.py`. Usually, an experiment is just a registration of algorithms and datasets
+so your definition would be very short if you inherit the base class. A training_step is not defined via `experiments` but via `algorithms` instead.
 Finally, add a yaml config file to `configurations/experiment` imitating that of
 `configurations/experiment/example_classification.yaml`, for each experiment you added.
 
