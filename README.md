@@ -85,7 +85,8 @@ First, create a new repository with this template. Make sure the new repository 
 logging.
 
 Add your method and baselines in `algorithms` following the `algorithms/README.md` as well as the example code in
-`algorithms/examples/classifier/classifier.py`. For pytorch experiments, write your algorithm as a [pytorch lightning](https://github.com/Lightning-AI/lightning)
+`algorithms/examples/classifier/classifier.py`. An algorithm defines both the model and training loop, but we simplified many things for you:
+For pytorch experiments, write your algorithm as a [pytorch lightning](https://github.com/Lightning-AI/lightning)
 `pl.LightningModule` which has extensive
 [documentation](https://lightning.ai/docs/pytorch/stable/). For a quick start, read "Define a LightningModule" in this [link](https://lightning.ai/docs/pytorch/stable/starter/introduction.html). Finally, add a yaml config file to `configurations/algorithm` imitating that of `configurations/algorithm/example_classifier.yaml`, for each algorithm you added.
 
@@ -94,7 +95,7 @@ Add your method and baselines in `algorithms` following the `algorithms/README.m
 `configurations/dataset/example_cifar10.yaml`, for each dataset you added.
 
 Add your experiment in `experiments` following the `experiments/README.md` or following the example code in
-`experiments/exp_classification.py`. Then register your experiment in `experiments/__init__.py`.
+`experiments/exp_classification.py`. Then register your experiment in `experiments/__init__.py`. Usually, an experiment is just a registration of algorithms and datasets, as a training_step is defined via `algorithms` instead.
 Finally, add a yaml config file to `configurations/experiment` imitating that of
 `configurations/experiment/example_classification.yaml`, for each experiment you added.
 
