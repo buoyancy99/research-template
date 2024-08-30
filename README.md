@@ -145,7 +145,7 @@ Then, launch sweep agents on different servers by running the command printed by
 ## Add slurm clusters
 
 It's very easy to add your own slurm clusters via adding a yaml file in `configurations/cluster`. You can take a look
-at `configurations/cluster/mit_supercloud.yaml` for example. If you are from an academic institute, feel free to create a pull request to add your school's cluster to our repo.
+at `configurations/cluster/mit_vision.yaml` for example. If you are from an academic institute, feel free to create a pull request to add your school's cluster to our repo.
 
 ## Feature Roadmap
 
