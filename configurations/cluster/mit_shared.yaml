@@ -1,7 +1,11 @@
 defaults:
   - base_slurm
 
+# inherits configurations/cluster/base_slurm.yaml
+# refer to it for all options you can override here
+
 params:
+  env_name: null # change this to your conda env name on cluster
   partition: csail-shared
   qos: lab-free
   num_gpus: 8

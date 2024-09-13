@@ -1,9 +1,18 @@
 defaults:
-  - base_slurm
+  - base_slurm 
+
+# inherits configurations/cluster/base_slurm.yaml
+# refer to it for all options you can override here
 
 params:
+  env_name: null # change this to your conda env name on cluster
   partition: null # e.g. vision-sitzmann
   qos: null # e.g. vision-sitzmann-main
+  num_gpus: 8 # some clusters use something like "h100:4" to request 4 NVIDA H100 GPUs
+  num_cpus: 64
+  memory: 128G
+  time: "24:0:0" # Acceptable time formats include "minutes", "minutes:seconds", "hours:minutes:seconds", "days-hours", "days-hours:minutes" and "days-hours:minutes:seconds".
+  email: null
 
 launch_template: |
   #!/bin/bash

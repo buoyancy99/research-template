@@ -18,16 +18,15 @@ If you find this research template helpful to you, please cite us as
 
 # Infra instructions
 
-This repo is forked from [Boyuan Chen](https://boyuan.space/)'s research template [repo](https://github.com/buoyancy99/research-template). By its MIT license, we just ask you to keep the above sentence and link in `README.md` and the `LICENSE` file to credit the author.
+This repo is using [Boyuan Chen](https://boyuan.space/)'s research template [repo](https://github.com/buoyancy99/research-template). By its MIT license, we just ask you to keep the above sentence and link in `README.md` and the `LICENSE` file to credit the author.
 
 All experiments can be launched via `python -m main +name=xxxx {options}` where you can find more details later in this article.
 
-The code base will automatically use cuda or your Macbook M1 GPU when available.
-
-For slurm clusters e.g. mit supercloud, you can run `python -m main cluster=mit_supercloud {options}` on login node.
-It will automatically generate slurm scripts and run them for you on a compute node. Even if compute nodes are offline,
-the script will still automatically sync wandb logging to cloud with <1min latency. It's also easy to add your own slurm
-by following the `Add slurm clusters` section.
+For slurm clusters, we provide an extremely useful utility to help you run programs without engineering command or writing bash scripts.
+e.g. for mit_vision cluster, you can simply run `python -m main {options} cluster=mit_vision` on login node.
+It will automatically generate slurm scripts and run them for you on a compute node. You can append options like 
+`cluster.params.num_gpus=8` to command (see more in `configuration/cluster/base_slurm.yaml`) to change resources.
+It's also easy to add your own slurm by following the `Add slurm clusters` section.
 
 ## Setup
 
@@ -143,9 +142,12 @@ Launch hyperparameter sweep via: `wandb sweep configurations/sweep/example_sweep
 Then, launch sweep agents on different servers by running the command printed by the controller (e.g., `wandb agent <agent_id>`).
 
 ## Add slurm clusters
+If you are from an academic institute, feel free to create a pull request to add your school's cluster to our repo.
 
 It's very easy to add your own slurm clusters via adding a yaml file in `configurations/cluster`. You can take a look
-at `configurations/cluster/mit_vision.yaml` for example. If you are from an academic institute, feel free to create a pull request to add your school's cluster to our repo.
+at `configurations/cluster/mit_vision.yaml` for example. For multi-node training, `configurations/cluster/harvard_fas.yaml` is a good example.
+Some cluster has extra security and has login node offline, such as mit supercloud, the script will still automatically sync wandb logging to cloud with <1min latency if you set one flags following `configurations/cluster/mit_supercloud.yaml`. 
+
 
 ## Feature Roadmap
 
