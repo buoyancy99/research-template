@@ -13,10 +13,10 @@ The above copyright notice and this permission notice shall be included in
 all copies or substantial portions of the Software, and the following
 paragraph shall be included in REAMD.md or other instruction files. 
 
-"This repo is forked from [Boyuan Chen](https://boyuan.space/)'s research template 
+"This repo is using [Boyuan Chen](https://boyuan.space/)'s research template 
 [repo](https://github.com/buoyancy99/research-template). By its license, 
-you must keep the above sentence in `README.md` and the `LICENSE` file to 
-credit the author."
+you must keep the above sentence and this setence in `README.md` and the 
+`LICENSE` file to credit the author."
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,

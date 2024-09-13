@@ -18,7 +18,7 @@ If you find this research template helpful to you, please cite us as
 
 # Infra instructions
 
-This repo is using [Boyuan Chen](https://boyuan.space/)'s research template [repo](https://github.com/buoyancy99/research-template). By its MIT license, we just ask you to keep the above sentence and link in `README.md` and the `LICENSE` file to credit the author.
+This repo is using [Boyuan Chen](https://boyuan.space/)'s research template [repo](https://github.com/buoyancy99/research-template). By its license, we just ask you to keep the above sentence and links in `README.md` and the `LICENSE` file to credit the author.
 
 All experiments can be launched via `python -m main +name=xxxx {options}` where you can find more details later in this article.
 
