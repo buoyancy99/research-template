@@ -2,7 +2,7 @@ is_compute_node_offline: False  # many slurm systems only allows internet on log
 
 params:
   env_name: template  # change this to the name of your conda environment
-  num_gpus: 1
+  num_gpus: 1 # some clusters use something like "h100:4" to request 4 NVIDA H100 GPUs
   num_cpus: 32
   memory: 32G
   time: "24:0:0" # Acceptable time formats include "minutes", "minutes:seconds", "hours:minutes:seconds", "days-hours", "days-hours:minutes" and "days-hours:minutes:seconds".

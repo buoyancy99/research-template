@@ -26,6 +26,13 @@ def submit_slurm_job(
     params = dict(name=cfg.name, log_dir=log_dir, project_root=project_root, python_args=python_args)
     params.update(cfg.cluster.params)
 
+    if (
+        "num_cpus" in cfg.cluster.params
+        and "ntasks_per_node" in cfg.cluster.params
+        and "cpus_per_task" not in cfg.cluster.params
+    ):
+        params["cpus_per_task"] = cfg.cluster.params.num_cpus // cfg.cluster.params.ntasks_per_node
+
     slurm_script = cfg.cluster.launch_template.format(**params)
 
     slurm_script_path = log_dir / "job.slurm"

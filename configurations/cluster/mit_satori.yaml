@@ -1,6 +1,9 @@
 defaults:
   - base_slurm
 
+# inherits configurations/cluster/base_slurm.yaml
+# refer to it for all options you can override here
+
 launch_template: |
   #!/bin/bash
 
