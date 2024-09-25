@@ -116,7 +116,7 @@ One special note, if your want to define a new task for your experiment, (e.g. o
 We use [hydra](https://hydra.cc) instead of `argparse` to configure arguments at every code level. You can both write a static config in `configuration` folder or, at runtime,
 [override part of yur static config](https://hydra.cc/docs/tutorials/basic/your_first_app/simple_cli/) with command line arguments.
 
-For example, arguments `algorithm=example_classifier experiment.lr=1e-3` will override the `lr` variable in `configurations/experiment/example_classifier.yaml`. The argument `wandb.mode` will override the `mode` under `wandb` namesspace in the file `configurations/config.yaml`.
+For example, arguments `algorithm=example_classifier experiment.lr=1e-3` will override the `lr` variable in `configurations/experiment/example_classifier.yaml`. The argument `wandb.mode` will override the `mode` under `wandb` namesspace in the file `configurations/config.yaml`. There is also [nested override](https://github.com/facebookresearch/hydra/issues/2798): e.g. the option `algorithm/backbone=resnet` will set the field algorithm.backbone to the file `configurations/algorithm/backbone/resnet.yaml` (doesn't exist in the repo, just as an example).
 
 All static config and runtime override will be logged to cloud automatically.
 
