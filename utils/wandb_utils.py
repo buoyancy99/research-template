@@ -9,7 +9,6 @@ from pathlib import Path
 from datetime import timedelta
 from typing import TYPE_CHECKING, Any, Literal, Mapping, Optional, Union
 from typing_extensions import override
-from functools import wraps
 import os
 from wandb_osh.hooks import TriggerWandbSyncHook
 import time

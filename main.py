@@ -18,15 +18,14 @@ from omegaconf import DictConfig, OmegaConf
 from omegaconf.omegaconf import open_dict
 
 from utils.print_utils import cyan
+from utils.distributed_utils import is_rank_zero
 from utils.ckpt_utils import download_latest_checkpoint, is_run_id
 from utils.cluster_utils import submit_slurm_job
-from utils.distributed_utils import is_rank_zero
 
 
 def run_local(cfg: DictConfig):
     # delay some imports in case they are not needed in non-local envs for submission
     from experiments import build_experiment
-    from utils.wandb_utils import OfflineWandbLogger, SpaceEfficientWandbLogger
 
     # Get yaml names
     hydra_cfg = hydra.core.hydra_config.HydraConfig.get()
@@ -47,30 +46,7 @@ def run_local(cfg: DictConfig):
         (output_dir.parents[1] / "latest-run").unlink(missing_ok=True)
         (output_dir.parents[1] / "latest-run").symlink_to(output_dir, target_is_directory=True)
 
-    # Set up logging with wandb.
-    if cfg.wandb.mode != "disabled":
-        # If resuming, merge into the existing run on wandb.
-        resume = cfg.get("resume", None)
-        name = f"{cfg.name} ({output_dir.parent.name}/{output_dir.name})" if resume is None else None
-
-        if "_on_compute_node" in cfg and cfg.cluster.is_compute_node_offline:
-            logger_cls = OfflineWandbLogger
-        else:
-            logger_cls = SpaceEfficientWandbLogger
-
-        logger = logger_cls(
-            name=name,
-            save_dir=str(output_dir),
-            offline=cfg.wandb.mode != "online",
-            project=cfg.wandb.project,
-            log_model="all",
-            config=OmegaConf.to_container(cfg),
-            id=resume,
-        )
-    else:
-        logger = None
-
-    # Load ckpt
+    # Resolve ckpt path
     resume = cfg.get("resume", None)
     load = cfg.get("load", None)
     checkpoint_path = None
@@ -88,11 +64,8 @@ def run_local(cfg: DictConfig):
         run_path = f"{cfg.wandb.entity}/{cfg.wandb.project}/{load_id}"
         checkpoint_path = Path("outputs/downloaded") / run_path / "model.ckpt"
 
-    if checkpoint_path and is_rank_zero:
-        print(f"Will load checkpoint from {checkpoint_path}")
-
     # launch experiment
-    experiment = build_experiment(cfg, logger, checkpoint_path)
+    experiment = build_experiment(cfg, output_dir, checkpoint_path)
 
     # for those who are searching, this is where we call tasks like 'training, validation, main'
     for task in cfg.experiment.tasks:

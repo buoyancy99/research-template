@@ -5,19 +5,15 @@ By its MIT license, you must keep the above sentence in `README.md`
 and the `LICENSE` file to credit the author.
 """
 
-from abc import ABC, abstractmethod
-from typing import Optional, Union, Literal, List, Dict
-import pathlib
+from abc import ABC
+from typing import Optional, Union, Dict
 import os
+from pathlib import Path
 
-import hydra
 import torch
-from lightning.pytorch.strategies.ddp import DDPStrategy
+import wandb
+from omegaconf import DictConfig, OmegaConf
 
-import lightning.pytorch as pl
-from lightning.pytorch.loggers.wandb import WandbLogger
-from lightning.pytorch.utilities.types import TRAIN_DATALOADERS
-from lightning.pytorch.callbacks import LearningRateMonitor, ModelCheckpoint
 
 from omegaconf import DictConfig
 
@@ -37,26 +33,31 @@ class BaseExperiment(ABC):
     compatible_algorithms: Dict = NotImplementedError
 
     def __init__(
-        self,
-        root_cfg: DictConfig,
-        logger: Optional[WandbLogger] = None,
-        ckpt_path: Optional[Union[str, pathlib.Path]] = None,
+        self, root_cfg: DictConfig, output_dir: Optional[Union[str, Path]], ckpt_path: Optional[Union[str, Path]] = None
     ) -> None:
         """
         Constructor
 
         Args:
-            cfg: configuration file that contains everything about the experiment
-            logger: a pytorch-lightning WandbLogger instance
+            root_cfg: configuration file that contains root configuration from project_root/configurations/config.yaml
+            output_dir: a directory to save outputs
             ckpt_path: an optional path to saved checkpoint
         """
         super().__init__()
         self.root_cfg = root_cfg
+        self.output_dir = Path(output_dir)
+        self.ckpt_path = Path(ckpt_path) if ckpt_path else None
+
         self.cfg = root_cfg.experiment
         self.debug = root_cfg.debug
-        self.logger = logger
-        self.ckpt_path = ckpt_path
+
+        # some tasks doesn't need logger or algo (e.g. download dataset) so leave for None for now
+        self.logger = None
         self.algo = None
+
+    def _build_logger(self):
+        self.logger = wandb
+        return self.logger
 
     def _build_algo(self):
         """
@@ -70,7 +71,8 @@ class BaseExperiment(ABC):
                 "Make sure you define compatible_algorithms correctly and make sure that each key has "
                 "same name as yaml file under '[project_root]/configurations/algorithm' without .yaml suffix"
             )
-        return self.compatible_algorithms[algo_name](self.root_cfg.algorithm)
+        self.algo = self.compatible_algorithms[algo_name](self.root_cfg.algorithm)
+        return self.algo
 
     def exec_task(self, task: str) -> None:
         """
@@ -104,12 +106,36 @@ class BaseLightningExperiment(BaseExperiment):
     # each key has to be a yaml file under '[project_root]/configurations/dataset' without .yaml suffix
     compatible_datasets: Dict = NotImplementedError
 
-    def _build_trainer_callbacks(self):
-        callbacks = []
-        if self.logger:
-            callbacks.append(LearningRateMonitor("step", True))
+    def _build_logger(self):
+        from utils.wandb_utils import OfflineWandbLogger, SpaceEfficientWandbLogger
 
-    def _build_training_loader(self) -> Optional[Union[TRAIN_DATALOADERS, pl.LightningDataModule]]:
+        output_dir = Path(self.output_dir)
+        wandb_cfg = self.root_cfg.wandb
+
+        # Set up logging with wandb.
+        if wandb_cfg.mode != "disabled":
+            # If resuming, merge into the existing run on wandb.
+            resume = self.root_cfg.get("resume", None)
+            name = f"{self.root_cfg.name} ({output_dir.parent.name}/{output_dir.name})" if resume is None else None
+
+            if "_on_compute_node" in self.root_cfg and self.root_cfg.cluster.is_compute_node_offline:
+                logger_cls = OfflineWandbLogger
+            else:
+                logger_cls = SpaceEfficientWandbLogger
+
+            self.logger = logger_cls(
+                name=name,
+                save_dir=str(output_dir),
+                offline=wandb_cfg.mode != "online",
+                project=wandb_cfg.project,
+                log_model="all",
+                config=OmegaConf.to_container(self.root_cfg),
+                id=resume,
+            )
+
+        return self.logger
+
+    def _build_training_loader(self) -> Optional[torch.utils.data.DataLoader]:
         train_dataset = self._build_dataset("training")
         shuffle = (
             False if isinstance(train_dataset, torch.utils.data.IterableDataset) else self.cfg.training.data.shuffle
@@ -125,7 +151,7 @@ class BaseLightningExperiment(BaseExperiment):
         else:
             return None
 
-    def _build_validation_loader(self) -> Optional[Union[TRAIN_DATALOADERS, pl.LightningDataModule]]:
+    def _build_validation_loader(self) -> Optional[torch.utils.data.DataLoader]:
         validation_dataset = self._build_dataset("validation")
         shuffle = (
             False
@@ -143,7 +169,7 @@ class BaseLightningExperiment(BaseExperiment):
         else:
             return None
 
-    def _build_test_loader(self) -> Optional[Union[TRAIN_DATALOADERS, pl.LightningDataModule]]:
+    def _build_test_loader(self) -> Optional[torch.utils.data.DataLoader]:
         test_dataset = self._build_dataset("test")
         shuffle = False if isinstance(test_dataset, torch.utils.data.IterableDataset) else self.cfg.test.data.shuffle
         if test_dataset:
@@ -161,10 +187,17 @@ class BaseLightningExperiment(BaseExperiment):
         """
         All training happens here
         """
+        import lightning.pytorch as pl
+        from lightning.pytorch.strategies.ddp import DDPStrategy
+        from lightning.pytorch.callbacks import LearningRateMonitor, ModelCheckpoint
+
         if not self.algo:
-            self.algo = self._build_algo()
+            self._build_algo()
         if self.cfg.training.compile:
             self.algo = torch.compile(self.algo)
+
+        if not self.logger:
+            self._build_logger()
 
         callbacks = []
         if self.logger:
@@ -172,7 +205,7 @@ class BaseLightningExperiment(BaseExperiment):
         if "checkpointing" in self.cfg.training:
             callbacks.append(
                 ModelCheckpoint(
-                    pathlib.Path(hydra.core.hydra_config.HydraConfig.get()["runtime"]["output_dir"]) / "checkpoints",
+                    self.output_dir / "checkpoints",
                     **self.cfg.training.checkpointing,
                 )
             )
@@ -211,10 +244,16 @@ class BaseLightningExperiment(BaseExperiment):
         """
         All validation happens here
         """
+        import lightning.pytorch as pl
+        from lightning.pytorch.strategies.ddp import DDPStrategy
+
         if not self.algo:
-            self.algo = self._build_algo()
+            self._build_algo()
         if self.cfg.validation.compile:
             self.algo = torch.compile(self.algo)
+
+        if not self.logger:
+            self._build_logger()
 
         callbacks = []
 
@@ -244,10 +283,16 @@ class BaseLightningExperiment(BaseExperiment):
         """
         All testing happens here
         """
+        import lightning.pytorch as pl
+        from lightning.pytorch.strategies.ddp import DDPStrategy
+
         if not self.algo:
-            self.algo = self._build_algo()
+            self._build_algo()
         if self.cfg.test.compile:
             self.algo = torch.compile(self.algo)
+
+        if not self.logger:
+            self.logger = self._build_logger()
 
         callbacks = []
 
