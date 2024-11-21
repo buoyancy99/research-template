@@ -94,10 +94,9 @@ class BaseExperiment(ABC):
             )
 
 
-class BaseLightningExperiment(BaseExperiment):
+class BasePytorchExperiment(BaseExperiment):
     """
-    Abstract class for pytorch lightning experiments. Useful for computer vision & nlp where main components are
-    simply models, datasets and train loop.
+    Abstract class for pytorch experiment
     """
 
     # each key has to be a yaml file under '[project_root]/configurations/algorithm' without .yaml suffix
@@ -106,34 +105,11 @@ class BaseLightningExperiment(BaseExperiment):
     # each key has to be a yaml file under '[project_root]/configurations/dataset' without .yaml suffix
     compatible_datasets: Dict = NotImplementedError
 
-    def _build_logger(self):
-        from utils.wandb_utils import OfflineWandbLogger, SpaceEfficientWandbLogger
-
-        output_dir = Path(self.output_dir)
-        wandb_cfg = self.root_cfg.wandb
-
-        # Set up logging with wandb.
-        if wandb_cfg.mode != "disabled":
-            # If resuming, merge into the existing run on wandb.
-            resume = self.root_cfg.get("resume", None)
-            name = f"{self.root_cfg.name} ({output_dir.parent.name}/{output_dir.name})" if resume is None else None
-
-            if "_on_compute_node" in self.root_cfg and self.root_cfg.cluster.is_compute_node_offline:
-                logger_cls = OfflineWandbLogger
-            else:
-                logger_cls = SpaceEfficientWandbLogger
-
-            self.logger = logger_cls(
-                name=name,
-                save_dir=str(output_dir),
-                offline=wandb_cfg.mode != "online",
-                project=wandb_cfg.project,
-                log_model="all",
-                config=OmegaConf.to_container(self.root_cfg),
-                id=resume,
-            )
-
-        return self.logger
+    def _build_dataset(self, split: str) -> Optional[torch.utils.data.Dataset]:
+        if split in ["training", "test", "validation"]:
+            return self.compatible_datasets[self.root_cfg.dataset._name](self.root_cfg.dataset, split=split)
+        else:
+            raise NotImplementedError(f"split '{split}' is not implemented")
 
     def _build_training_loader(self) -> Optional[torch.utils.data.DataLoader]:
         train_dataset = self._build_dataset("training")
@@ -182,6 +158,79 @@ class BaseLightningExperiment(BaseExperiment):
             )
         else:
             return None
+
+    def validation(self, validation_loader=None) -> None:
+        if validation_loader is None:
+            validation_loader = self._build_validation_loader()
+
+        for i, batch in enumerate(validation_loader):
+            batch = self.algo.on_after_batch_transfer(batch)
+            self.algo.validation_step(batch, i)
+
+    def training(self) -> None:
+        """
+        All training happens here
+        """
+
+        if self.algo is None:
+            self._build_algo()
+
+        optimizer = self.algo.configure_optimizers()
+
+        training_loader = self._build_training_loader()
+        validation_loader = self._build_validation_loader()
+        test_loader = self._build_test_loader()
+
+        # define our custom x axis metric
+        wandb.define_metric("global_step")
+        wandb.define_metric("*", step_metric="global_step")
+
+        global_steps = 0
+        for e in range(self.cfg.training.epochs):
+            for i, batch in enumerate(training_loader):
+                global_steps += 1
+                batch = self.algo.on_after_batch_transfer(batch)
+                loss = self.algo.training_step(batch, i)
+                optimizer.zero_grad()
+                loss.backward()
+                optimizer.step()
+                self.logger.log_metrics({"loss": loss.item(), "global_steps": global_steps})
+
+
+class BaseLightningExperiment(BasePytorchExperiment):
+    """
+    Abstract class for pytorch lightning experiments. Pytorch lightning is a high-level interface for PyTorch that
+    has good support
+    """
+
+    def _build_logger(self):
+        from utils.wandb_utils import OfflineWandbLogger, SpaceEfficientWandbLogger
+
+        output_dir = Path(self.output_dir)
+        wandb_cfg = self.root_cfg.wandb
+
+        # Set up logging with wandb.
+        if wandb_cfg.mode != "disabled":
+            # If resuming, merge into the existing run on wandb.
+            resume = self.root_cfg.get("resume", None)
+            name = f"{self.root_cfg.name} ({output_dir.parent.name}/{output_dir.name})" if resume is None else None
+
+            if "_on_compute_node" in self.root_cfg and self.root_cfg.cluster.is_compute_node_offline:
+                logger_cls = OfflineWandbLogger
+            else:
+                logger_cls = SpaceEfficientWandbLogger
+
+            self.logger = logger_cls(
+                name=name,
+                save_dir=str(output_dir),
+                offline=wandb_cfg.mode != "online",
+                project=wandb_cfg.project,
+                log_model="all",
+                config=OmegaConf.to_container(self.root_cfg),
+                id=resume,
+            )
+
+        return self.logger
 
     def training(self) -> None:
         """
@@ -316,9 +365,3 @@ class BaseLightningExperiment(BaseExperiment):
             dataloaders=self._build_test_loader(),
             ckpt_path=self.ckpt_path,
         )
-
-    def _build_dataset(self, split: str) -> Optional[torch.utils.data.Dataset]:
-        if split in ["training", "test", "validation"]:
-            return self.compatible_datasets[self.root_cfg.dataset._name](self.root_cfg.dataset, split=split)
-        else:
-            raise NotImplementedError(f"split '{split}' is not implemented")
