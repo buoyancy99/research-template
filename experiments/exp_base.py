@@ -228,6 +228,7 @@ class BaseLightningExperiment(BasePytorchExperiment):
                 log_model="all",
                 config=OmegaConf.to_container(self.root_cfg),
                 id=resume,
+                entity=wandb_cfg.entity,
             )
 
         return self.logger
